@@ -1,6 +1,5 @@
 import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
-import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
@@ -171,11 +170,13 @@ export function JobForm({ job, errors }: JobFormProps) {
               name="wow"
               value="false"
             />
-            <Checkbox
+            <input
+              type="checkbox"
               id="wow"
               name="wow"
               value="true"
               defaultChecked={job?.wow ?? false}
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
             />
             <Label htmlFor="wow" className="text-base font-medium cursor-pointer">
               Wow Factor — This job stands out!

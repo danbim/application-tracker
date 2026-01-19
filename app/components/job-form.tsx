@@ -1,5 +1,6 @@
 import { Form } from "react-router";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
@@ -54,6 +55,7 @@ const RATING_CRITERIA = [
   { name: "ratingProfileMatch", label: "Profile Match" },
   { name: "ratingCompanySize", label: "Company Size" },
   { name: "ratingStress", label: "Stress Factor" },
+  { name: "ratingJobSecurity", label: "Job Security" },
 ];
 
 export function JobForm({ job, errors }: JobFormProps) {
@@ -149,6 +151,23 @@ export function JobForm({ job, errors }: JobFormProps) {
               type="date"
               defaultValue={job?.dateOpened ?? ""}
             />
+          </div>
+
+          <div className="flex items-center space-x-2 pt-2">
+            <input
+              type="hidden"
+              name="wow"
+              value="false"
+            />
+            <Checkbox
+              id="wow"
+              name="wow"
+              value="true"
+              defaultChecked={job?.wow ?? false}
+            />
+            <Label htmlFor="wow" className="text-base font-medium cursor-pointer">
+              Wow Factor — This job stands out!
+            </Label>
           </div>
         </CardContent>
       </Card>

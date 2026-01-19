@@ -22,6 +22,8 @@ const WEIGHT_FIELDS = [
   { key: "profileMatch", label: "Profile Match" },
   { key: "companySize", label: "Company Size" },
   { key: "stress", label: "Stress Factor" },
+  { key: "jobSecurity", label: "Job Security" },
+  { key: "wowBoost", label: "Wow Boost" },
 ];
 
 export function FormulaForm({ formula, errors }: FormulaFormProps) {
@@ -52,7 +54,7 @@ export function FormulaForm({ formula, errors }: FormulaFormProps) {
         <CardHeader>
           <CardTitle>Criterion Weights</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Set the weight (0 or higher) for each criterion. Higher weights mean the criterion has more impact on the final score.
+            Set the weight for each criterion. Positive weights increase the score, negative weights decrease it. Use negative weights for criteria like stress.
           </p>
         </CardHeader>
         <CardContent>
@@ -64,7 +66,6 @@ export function FormulaForm({ formula, errors }: FormulaFormProps) {
                   id={`weights.${key}`}
                   name={`weights.${key}`}
                   type="number"
-                  min="0"
                   defaultValue={formula?.weights?.[key as keyof typeof formula.weights] ?? 1}
                 />
               </div>

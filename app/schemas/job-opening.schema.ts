@@ -37,6 +37,10 @@ export const jobOpeningSchema = z.object({
   ratingProfileMatch: ratingSchema,
   ratingCompanySize: ratingSchema,
   ratingStress: ratingSchema,
+  ratingJobSecurity: ratingSchema,
+
+  // Wow factor
+  wow: z.coerce.boolean().default(false),
 });
 
 export const applicationStatusSchema = z.object({

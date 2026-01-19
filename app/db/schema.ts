@@ -32,6 +32,8 @@ export const scoringFormulas = pgTable("scoring_formulas", {
     profileMatch: number;
     companySize: number;
     stress: number;
+    jobSecurity: number;
+    wowBoost: number;
   }>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -47,6 +49,7 @@ export const jobOpenings = pgTable("job_openings", {
   postingUrl: varchar("posting_url", { length: 2048 }),
   dateOpened: date("date_opened"),
   dateAdded: timestamp("date_added").defaultNow().notNull(),
+  wow: boolean("wow").default(false).notNull(),
   applicationSent: boolean("application_sent").default(false).notNull(),
   applicationSentDate: date("application_sent_date"),
 
@@ -76,6 +79,7 @@ export const jobOpenings = pgTable("job_openings", {
   ratingProfileMatch: integer("rating_profile_match"),
   ratingCompanySize: integer("rating_company_size"),
   ratingStress: integer("rating_stress"),
+  ratingJobSecurity: integer("rating_job_security"),
 
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

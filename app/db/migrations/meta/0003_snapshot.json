@@ -1,0 +1,304 @@
+{
+  "id": "d77e2e18-d88e-4125-91e8-e3ab3b7ed308",
+  "prevId": "43d50356-8282-47aa-a3e1-b815e32eab65",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.job_openings": {
+      "name": "job_openings",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company": {
+          "name": "company",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "job_location": {
+          "name": "job_location",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "country": {
+          "name": "country",
+          "type": "varchar(2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "posting_url": {
+          "name": "posting_url",
+          "type": "varchar(2048)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_opened": {
+          "name": "date_opened",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date_added": {
+          "name": "date_added",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "application_sent": {
+          "name": "application_sent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "application_sent_date": {
+          "name": "application_sent_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salary_min": {
+          "name": "salary_min",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salary_max": {
+          "name": "salary_max",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salary_currency": {
+          "name": "salary_currency",
+          "type": "varchar(3)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pension_scheme": {
+          "name": "pension_scheme",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "health_insurance": {
+          "name": "health_insurance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stock_options": {
+          "name": "stock_options",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vacation_days": {
+          "name": "vacation_days",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "work_location": {
+          "name": "work_location",
+          "type": "work_location",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "office_distance_km": {
+          "name": "office_distance_km",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "wfh_days_per_week": {
+          "name": "wfh_days_per_week",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_impact": {
+          "name": "rating_impact",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_compensation": {
+          "name": "rating_compensation",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_role": {
+          "name": "rating_role",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_tech": {
+          "name": "rating_tech",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_location": {
+          "name": "rating_location",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_industry": {
+          "name": "rating_industry",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_culture": {
+          "name": "rating_culture",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_growth": {
+          "name": "rating_growth",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_profile_match": {
+          "name": "rating_profile_match",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_company_size": {
+          "name": "rating_company_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_stress": {
+          "name": "rating_stress",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating_job_security": {
+          "name": "rating_job_security",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.scoring_formulas": {
+      "name": "scoring_formulas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weights": {
+          "name": "weights",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.work_location": {
+      "name": "work_location",
+      "schema": "public",
+      "values": [
+        "remote",
+        "hybrid",
+        "office"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -17,6 +17,7 @@ const RATING_FIELDS = [
   "ratingProfileMatch",
   "ratingCompanySize",
   "ratingStress",
+  "ratingJobSecurity",
 ] as const;
 
 const WEIGHT_KEYS = [
@@ -31,6 +32,7 @@ const WEIGHT_KEYS = [
   "profileMatch",
   "companySize",
   "stress",
+  "jobSecurity",
 ] as const;
 
 export class ScoringService {
@@ -41,11 +43,16 @@ export class ScoringService {
       const ratingField = RATING_FIELDS[i];
       const weightKey = WEIGHT_KEYS[i];
       const rating = job[ratingField];
-      const weight = formula.weights[weightKey];
+      const weight = formula.weights[weightKey] ?? 0;
 
       if (rating !== null && rating !== undefined) {
         score += rating * weight;
       }
+    }
+
+    // Apply wow boost if job has wow factor
+    if (job.wow) {
+      score += formula.weights.wowBoost ?? 0;
     }
 
     return score;

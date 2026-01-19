@@ -1,0 +1,1 @@
+ALTER TABLE "job_openings" ADD COLUMN "wow" boolean DEFAULT false NOT NULL;

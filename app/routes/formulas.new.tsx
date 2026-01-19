@@ -29,6 +29,8 @@ export async function action({ request }: Route.ActionArgs) {
       profileMatch: formData.get("weights.profileMatch"),
       companySize: formData.get("weights.companySize"),
       stress: formData.get("weights.stress"),
+      jobSecurity: formData.get("weights.jobSecurity"),
+      wowBoost: formData.get("weights.wowBoost"),
     },
   };
 

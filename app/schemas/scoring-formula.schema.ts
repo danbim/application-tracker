@@ -1,17 +1,19 @@
 import { z } from "zod";
 
 export const weightsSchema = z.object({
-  impact: z.coerce.number().int().min(0),
-  compensation: z.coerce.number().int().min(0),
-  role: z.coerce.number().int().min(0),
-  tech: z.coerce.number().int().min(0),
-  location: z.coerce.number().int().min(0),
-  industry: z.coerce.number().int().min(0),
-  culture: z.coerce.number().int().min(0),
-  growth: z.coerce.number().int().min(0),
-  profileMatch: z.coerce.number().int().min(0),
-  companySize: z.coerce.number().int().min(0),
-  stress: z.coerce.number().int().min(0),
+  impact: z.coerce.number().int(),
+  compensation: z.coerce.number().int(),
+  role: z.coerce.number().int(),
+  tech: z.coerce.number().int(),
+  location: z.coerce.number().int(),
+  industry: z.coerce.number().int(),
+  culture: z.coerce.number().int(),
+  growth: z.coerce.number().int(),
+  profileMatch: z.coerce.number().int(),
+  companySize: z.coerce.number().int(),
+  stress: z.coerce.number().int(),
+  jobSecurity: z.coerce.number().int(),
+  wowBoost: z.coerce.number().int(),
 });
 
 export const scoringFormulaSchema = z.object({

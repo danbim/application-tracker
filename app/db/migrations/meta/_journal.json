@@ -22,6 +22,20 @@
       "when": 1768855440229,
       "tag": "0002_acoustic_runaways",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768856057639,
+      "tag": "0003_robust_miss_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1768857084292,
+      "tag": "0004_nasty_vampiro",
+      "breakpoints": true
     }
   ]
 }

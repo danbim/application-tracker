@@ -22,6 +22,8 @@ describe("ScoringService", () => {
       ratingProfileMatch: null,
       ratingCompanySize: null,
       ratingStress: null,
+      ratingJobSecurity: null,
+      wow: false,
       ...ratings,
     }) as JobOpening;
 
@@ -47,6 +49,8 @@ describe("ScoringService", () => {
         profileMatch: 1,
         companySize: 1,
         stress: 1,
+        jobSecurity: 1,
+        wowBoost: 0,
       });
 
       const score = service.calculateScore(job, formula);
@@ -71,6 +75,8 @@ describe("ScoringService", () => {
         profileMatch: 0,
         companySize: 0,
         stress: 1,
+        jobSecurity: 0,
+        wowBoost: 0,
       });
 
       // (1 * 2) + (1 * 3) + (-1 * 1) = 2 + 3 - 1 = 4
@@ -95,6 +101,8 @@ describe("ScoringService", () => {
         profileMatch: 0,
         companySize: 0,
         stress: 0,
+        jobSecurity: 0,
+        wowBoost: 0,
       });
 
       // (-1 * 2) + (-1 * 2) = -4
@@ -121,6 +129,8 @@ describe("ScoringService", () => {
         profileMatch: 0,
         companySize: 0,
         stress: 0,
+        jobSecurity: 0,
+        wowBoost: 0,
       });
 
       const ranked = service.rankJobOpenings([job1, job2, job3], formula);

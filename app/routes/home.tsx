@@ -51,6 +51,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const formulaParam = url.searchParams.get("formula");
   const sortParam = url.searchParams.get("sort") || "score";
   const countryParam = url.searchParams.get("country");
+  const wowParam = url.searchParams.get("wow");
 
   const [allJobs, formulas] = await Promise.all([
     jobOpeningRepository.findAll(),
@@ -62,11 +63,17 @@ export async function loader({ request }: Route.LoaderArgs) {
     ...new Set(allJobs.map((job) => job.country).filter(Boolean)),
   ].sort() as string[];
 
-  // Filter jobs by country if specified
-  const jobs =
-    countryParam && countryParam !== "all"
-      ? allJobs.filter((job) => job.country === countryParam)
-      : allJobs;
+  // Check if any jobs have wow factor
+  const hasWowJobs = allJobs.some((job) => job.wow);
+
+  // Filter jobs by country and wow if specified
+  let jobs = allJobs;
+  if (countryParam && countryParam !== "all") {
+    jobs = jobs.filter((job) => job.country === countryParam);
+  }
+  if (wowParam === "true") {
+    jobs = jobs.filter((job) => job.wow);
+  }
 
   let rankedJobs: RankedJobOpening[];
   let selectedFormulaId: string | null = null;
@@ -100,6 +107,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     sortBy: sortParam,
     availableCountries,
     selectedCountry: countryParam || "all",
+    hasWowJobs,
+    wowFilter: wowParam === "true",
   };
 }
 
@@ -124,7 +133,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
-  const { jobs, formulas, selectedFormulaId, sortBy, availableCountries, selectedCountry } =
+  const { jobs, formulas, selectedFormulaId, sortBy, availableCountries, selectedCountry, hasWowJobs, wowFilter } =
     useLoaderData<typeof loader>();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -169,6 +178,7 @@ export default function Home() {
         <Form method="get" className="flex gap-2 items-center">
           <input type="hidden" name="sort" value={sortBy} />
           <input type="hidden" name="country" value={selectedCountry} />
+          <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
           <label htmlFor="formula-select" className="text-sm font-medium">
             Formula:
           </label>
@@ -192,6 +202,7 @@ export default function Home() {
         <Form method="get" className="flex gap-2 items-center">
           <input type="hidden" name="formula" value={selectedFormulaId || ""} />
           <input type="hidden" name="country" value={selectedCountry} />
+          <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
           <label htmlFor="sort-select" className="text-sm font-medium">
             Sort by:
           </label>
@@ -213,6 +224,7 @@ export default function Home() {
           <Form method="get" className="flex gap-2 items-center">
             <input type="hidden" name="formula" value={selectedFormulaId || ""} />
             <input type="hidden" name="sort" value={sortBy} />
+            <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
             <label htmlFor="country-select" className="text-sm font-medium">
               Country:
             </label>
@@ -231,6 +243,18 @@ export default function Home() {
             </Select>
             <Button type="submit" variant="secondary" size="sm">
               Filter
+            </Button>
+          </Form>
+        )}
+
+        {hasWowJobs && (
+          <Form method="get" className="flex gap-2 items-center">
+            <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+            <input type="hidden" name="sort" value={sortBy} />
+            <input type="hidden" name="country" value={selectedCountry} />
+            <input type="hidden" name="wow" value={wowFilter ? "" : "true"} />
+            <Button type="submit" variant={wowFilter ? "default" : "outline"} size="sm">
+              {wowFilter ? "★ Wow Only" : "☆ Show Wow"}
             </Button>
           </Form>
         )}

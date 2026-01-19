@@ -32,7 +32,11 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   // Update handling - same validation as new job route
-  const data = Object.fromEntries(formData);
+  const data = {
+    ...Object.fromEntries(formData),
+    // Handle checkbox: if checked, last value is "true"; use getAll to check
+    wow: formData.getAll("wow").includes("true"),
+  };
   const result = jobOpeningSchema.safeParse(data);
 
   if (!result.success) {

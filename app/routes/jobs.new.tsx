@@ -13,7 +13,11 @@ export function meta({}: Route.MetaArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const data = Object.fromEntries(formData);
+  const data = {
+    ...Object.fromEntries(formData),
+    // Handle checkbox: if checked, last value is "true"; use getAll to check
+    wow: formData.getAll("wow").includes("true"),
+  };
 
   const result = jobOpeningSchema.safeParse(data);
 

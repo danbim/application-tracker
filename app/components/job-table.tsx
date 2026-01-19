@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import Markdown from "react-markdown";
 import {
   Table,
   TableBody,
@@ -7,6 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "~/components/ui/hover-card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import type { RankedJobOpening } from "~/services/scoring.service";
@@ -46,7 +52,25 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
         ) : (
           jobs.map(({ job, score }) => (
             <TableRow key={job.id}>
-              <TableCell className="font-medium">{job.title}</TableCell>
+              <TableCell className="font-medium">
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <span className="cursor-help underline decoration-dotted underline-offset-2">
+                      {job.title}
+                      {job.wow && " ★"}
+                    </span>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-96 max-h-80 overflow-y-auto">
+                    <div className="space-y-2">
+                      <h4 className="font-semibold">{job.title}</h4>
+                      <p className="text-sm text-muted-foreground">{job.company}</p>
+                      <div className="prose prose-sm max-w-none">
+                        <Markdown>{job.description}</Markdown>
+                      </div>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              </TableCell>
               <TableCell>{job.company}</TableCell>
               <TableCell>{job.jobLocation || "-"}</TableCell>
               <TableCell>{formatDate(job.dateAdded)}</TableCell>

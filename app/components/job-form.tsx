@@ -1,4 +1,7 @@
+import { useState, useCallback } from "react";
 import { Form } from "react-router";
+import Markdown from "react-markdown";
+import TurndownService from "turndown";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -13,6 +16,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { RatingInput } from "~/components/rating-input";
 import type { JobOpening } from "~/db/schema";
+
+const turndownService = new TurndownService({
+  headingStyle: "atx",
+  codeBlockStyle: "fenced",
+});
 
 type JobFormProps = {
   job?: JobOpening;
@@ -58,6 +66,22 @@ const RATING_CRITERIA = [
 ];
 
 export function JobForm({ job, errors }: JobFormProps) {
+  const [description, setDescription] = useState(job?.description ?? "");
+  const [showPreview, setShowPreview] = useState(false);
+
+  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const html = e.clipboardData.getData("text/html");
+    if (html) {
+      e.preventDefault();
+      const markdown = turndownService.turndown(html);
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const newValue = description.slice(0, start) + markdown + description.slice(end);
+      setDescription(newValue);
+    }
+  }, [description]);
+
   return (
     <Form method="post" className="space-y-6">
       <Card>
@@ -105,16 +129,34 @@ export function JobForm({ job, errors }: JobFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description">Description *</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowPreview(!showPreview)}
+              >
+                {showPreview ? "Hide Preview" : "Show Preview"}
+              </Button>
+            </div>
             <Textarea
               id="description"
               name="description"
               rows={6}
-              defaultValue={job?.description}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              onPaste={handlePaste}
+              placeholder="Paste from LinkedIn or other sources - HTML will be converted to Markdown"
               required
             />
             {errors?.description && (
               <p className="text-sm text-red-500">{errors.description}</p>
+            )}
+            {showPreview && description && (
+              <div className="mt-2 p-4 border rounded-md bg-muted/50 prose prose-sm max-w-none">
+                <Markdown>{description}</Markdown>
+              </div>
             )}
           </div>
 

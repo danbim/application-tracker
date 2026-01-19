@@ -43,6 +43,7 @@ export const jobOpenings = pgTable("job_openings", {
   company: varchar("company", { length: 255 }).notNull(),
   description: text("description").notNull(),
   jobLocation: varchar("job_location", { length: 255 }),
+  country: varchar("country", { length: 2 }),
   postingUrl: varchar("posting_url", { length: 2048 }),
   dateOpened: date("date_opened"),
   dateAdded: timestamp("date_added").defaultNow().notNull(),

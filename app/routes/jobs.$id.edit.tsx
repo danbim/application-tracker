@@ -47,6 +47,7 @@ export async function action({ request, params }: Route.ActionArgs) {
   const jobData = {
     ...result.data,
     jobLocation: result.data.jobLocation || null,
+    country: result.data.country || null,
     postingUrl: result.data.postingUrl || null,
     dateOpened: result.data.dateOpened || null,
     salaryMin: result.data.salaryMin || null,

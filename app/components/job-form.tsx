@@ -21,6 +21,27 @@ type JobFormProps = {
 
 const CURRENCIES = ["EUR", "USD", "GBP", "CHF"];
 
+const COUNTRIES = [
+  { code: "DE", name: "Germany" },
+  { code: "GB", name: "United Kingdom" },
+  { code: "NL", name: "Netherlands" },
+  { code: "FR", name: "France" },
+  { code: "CH", name: "Switzerland" },
+  { code: "AT", name: "Austria" },
+  { code: "BE", name: "Belgium" },
+  { code: "ES", name: "Spain" },
+  { code: "IT", name: "Italy" },
+  { code: "PL", name: "Poland" },
+  { code: "SE", name: "Sweden" },
+  { code: "DK", name: "Denmark" },
+  { code: "NO", name: "Norway" },
+  { code: "FI", name: "Finland" },
+  { code: "IE", name: "Ireland" },
+  { code: "PT", name: "Portugal" },
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+];
+
 const RATING_CRITERIA = [
   { name: "ratingImpact", label: "Positive Impact" },
   { name: "ratingCompensation", label: "Compensation" },
@@ -84,15 +105,30 @@ export function JobForm({ job, errors }: JobFormProps) {
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="jobLocation">Location</Label>
+              <Label htmlFor="jobLocation">City/Region</Label>
               <Input
                 id="jobLocation"
                 name="jobLocation"
-                placeholder="e.g., Berlin, Germany"
+                placeholder="e.g., Berlin"
                 defaultValue={job?.jobLocation ?? ""}
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="country">Country</Label>
+              <Select name="country" defaultValue={job?.country ?? ""}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {COUNTRIES.map((country) => (
+                    <SelectItem key={country.code} value={country.code}>
+                      {country.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="postingUrl">Posting URL</Label>

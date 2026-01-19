@@ -7,6 +7,7 @@ export const jobOpeningSchema = z.object({
   company: z.string().min(1, "Company is required").max(255),
   description: z.string().min(1, "Description is required"),
   jobLocation: z.string().max(255).optional().or(z.literal("")),
+  country: z.string().length(2).optional().or(z.literal("")),
   postingUrl: z.string().url().max(2048).optional().or(z.literal("")),
   dateOpened: z.string().optional().or(z.literal("")),
 

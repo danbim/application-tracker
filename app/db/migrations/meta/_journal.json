@@ -15,6 +15,13 @@
       "when": 1768854872366,
       "tag": "0001_curious_kronos",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768855440229,
+      "tag": "0002_acoustic_runaways",
+      "breakpoints": true
     }
   ]
 }

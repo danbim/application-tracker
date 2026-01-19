@@ -1,0 +1,1 @@
+ALTER TABLE "job_openings" ADD COLUMN "country" varchar(2);

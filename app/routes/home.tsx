@@ -18,6 +18,27 @@ import {
 } from "~/services/index.server";
 import type { RankedJobOpening } from "~/services/scoring.service";
 
+const COUNTRIES: Record<string, string> = {
+  DE: "Germany",
+  GB: "United Kingdom",
+  NL: "Netherlands",
+  FR: "France",
+  CH: "Switzerland",
+  AT: "Austria",
+  BE: "Belgium",
+  ES: "Spain",
+  IT: "Italy",
+  PL: "Poland",
+  SE: "Sweden",
+  DK: "Denmark",
+  NO: "Norway",
+  FI: "Finland",
+  IE: "Ireland",
+  PT: "Portugal",
+  US: "United States",
+  CA: "Canada",
+};
+
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Job Openings - Job Tracker" },
@@ -29,11 +50,23 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const formulaParam = url.searchParams.get("formula");
   const sortParam = url.searchParams.get("sort") || "score";
+  const countryParam = url.searchParams.get("country");
 
-  const [jobs, formulas] = await Promise.all([
+  const [allJobs, formulas] = await Promise.all([
     jobOpeningRepository.findAll(),
     scoringFormulaRepository.findAll(),
   ]);
+
+  // Get unique countries from all jobs for the filter dropdown
+  const availableCountries = [
+    ...new Set(allJobs.map((job) => job.country).filter(Boolean)),
+  ].sort() as string[];
+
+  // Filter jobs by country if specified
+  const jobs =
+    countryParam && countryParam !== "all"
+      ? allJobs.filter((job) => job.country === countryParam)
+      : allJobs;
 
   let rankedJobs: RankedJobOpening[];
   let selectedFormulaId: string | null = null;
@@ -65,6 +98,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     formulas,
     selectedFormulaId,
     sortBy: sortParam,
+    availableCountries,
+    selectedCountry: countryParam || "all",
   };
 }
 
@@ -89,7 +124,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
-  const { jobs, formulas, selectedFormulaId, sortBy } =
+  const { jobs, formulas, selectedFormulaId, sortBy, availableCountries, selectedCountry } =
     useLoaderData<typeof loader>();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -130,9 +165,10 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex gap-4 mb-6 flex-wrap">
         <Form method="get" className="flex gap-2 items-center">
           <input type="hidden" name="sort" value={sortBy} />
+          <input type="hidden" name="country" value={selectedCountry} />
           <label htmlFor="formula-select" className="text-sm font-medium">
             Formula:
           </label>
@@ -155,6 +191,7 @@ export default function Home() {
 
         <Form method="get" className="flex gap-2 items-center">
           <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+          <input type="hidden" name="country" value={selectedCountry} />
           <label htmlFor="sort-select" className="text-sm font-medium">
             Sort by:
           </label>
@@ -171,6 +208,32 @@ export default function Home() {
             Sort
           </Button>
         </Form>
+
+        {availableCountries.length > 0 && (
+          <Form method="get" className="flex gap-2 items-center">
+            <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+            <input type="hidden" name="sort" value={sortBy} />
+            <label htmlFor="country-select" className="text-sm font-medium">
+              Country:
+            </label>
+            <Select name="country" defaultValue={selectedCountry}>
+              <SelectTrigger id="country-select" className="w-[180px]">
+                <SelectValue placeholder="Filter by country" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Countries</SelectItem>
+                {availableCountries.map((code) => (
+                  <SelectItem key={code} value={code}>
+                    {COUNTRIES[code] || code}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button type="submit" variant="secondary" size="sm">
+              Filter
+            </Button>
+          </Form>
+        )}
       </div>
 
       <JobTable jobs={jobs} onMarkApplied={handleMarkApplied} />

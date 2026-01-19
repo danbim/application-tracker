@@ -50,7 +50,8 @@ export const jobOpenings = pgTable("job_openings", {
   applicationSentDate: date("application_sent_date"),
 
   // Compensation
-  salaryAmount: integer("salary_amount"),
+  salaryMin: integer("salary_min"),
+  salaryMax: integer("salary_max"),
   salaryCurrency: varchar("salary_currency", { length: 3 }),
   pensionScheme: text("pension_scheme"),
   healthInsurance: text("health_insurance"),

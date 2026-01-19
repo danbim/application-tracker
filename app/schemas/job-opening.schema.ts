@@ -11,7 +11,8 @@ export const jobOpeningSchema = z.object({
   dateOpened: z.string().optional().or(z.literal("")),
 
   // Compensation
-  salaryAmount: z.coerce.number().int().positive().optional().or(z.literal("")),
+  salaryMin: z.coerce.number().int().positive().optional().or(z.literal("")),
+  salaryMax: z.coerce.number().int().positive().optional().or(z.literal("")),
   salaryCurrency: z.string().length(3).optional().or(z.literal("")),
   pensionScheme: z.string().optional().or(z.literal("")),
   healthInsurance: z.string().optional().or(z.literal("")),

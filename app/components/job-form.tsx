@@ -122,15 +122,25 @@ export function JobForm({ job, errors }: JobFormProps) {
           <CardTitle>Compensation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-            <div className="space-y-2 col-span-2">
-              <Label htmlFor="salaryAmount">Annual Gross Salary</Label>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="salaryMin">Salary Min</Label>
               <Input
-                id="salaryAmount"
-                name="salaryAmount"
+                id="salaryMin"
+                name="salaryMin"
                 type="number"
-                placeholder="e.g., 80000"
-                defaultValue={job?.salaryAmount ?? ""}
+                placeholder="e.g., 70000"
+                defaultValue={job?.salaryMin ?? ""}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="salaryMax">Salary Max</Label>
+              <Input
+                id="salaryMax"
+                name="salaryMax"
+                type="number"
+                placeholder="e.g., 90000"
+                defaultValue={job?.salaryMax ?? ""}
               />
             </div>
             <div className="space-y-2">
@@ -147,6 +157,15 @@ export function JobForm({ job, errors }: JobFormProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="vacationDays">Vacation Days</Label>
+              <Input
+                id="vacationDays"
+                name="vacationDays"
+                type="number"
+                defaultValue={job?.vacationDays ?? ""}
+              />
             </div>
           </div>
 
@@ -170,24 +189,13 @@ export function JobForm({ job, errors }: JobFormProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="stockOptions">Stock Options</Label>
-              <Input
-                id="stockOptions"
-                name="stockOptions"
-                defaultValue={job?.stockOptions ?? ""}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="vacationDays">Vacation Days</Label>
-              <Input
-                id="vacationDays"
-                name="vacationDays"
-                type="number"
-                defaultValue={job?.vacationDays ?? ""}
-              />
-            </div>
+          <div className="space-y-2">
+            <Label htmlFor="stockOptions">Stock Options</Label>
+            <Input
+              id="stockOptions"
+              name="stockOptions"
+              defaultValue={job?.stockOptions ?? ""}
+            />
           </div>
         </CardContent>
       </Card>

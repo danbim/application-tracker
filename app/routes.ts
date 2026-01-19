@@ -5,4 +5,5 @@ export default [
   route("jobs/new", "routes/jobs.new.tsx"),
   route("jobs/:id/edit", "routes/jobs.$id.edit.tsx"),
   route("formulas", "routes/formulas.tsx"),
+  route("formulas/new", "routes/formulas.new.tsx"),
 ] satisfies RouteConfig;

@@ -20,6 +20,9 @@ export const jobOpeningSchema = z.object({
   stockOptions: z.string().optional().or(z.literal("")),
   vacationDays: z.coerce.number().int().positive().optional().or(z.literal("")),
 
+  // Track
+  track: z.enum(["engineering", "management"]).optional().or(z.literal("")),
+
   // Work location
   workLocation: z.enum(["remote", "hybrid", "office"]).optional().or(z.literal("")),
   officeDistanceKm: z.coerce.number().int().min(0).optional().or(z.literal("")),

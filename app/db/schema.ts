@@ -17,6 +17,11 @@ export const workLocationEnum = pgEnum("work_location", [
   "office",
 ]);
 
+export const jobTrackEnum = pgEnum("job_track", [
+  "engineering",
+  "management",
+]);
+
 export const scoringFormulas = pgTable("scoring_formulas", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -50,6 +55,7 @@ export const jobOpenings = pgTable("job_openings", {
   dateOpened: date("date_opened"),
   dateAdded: timestamp("date_added").defaultNow().notNull(),
   wow: boolean("wow").default(false).notNull(),
+  track: jobTrackEnum("track"),
   applicationSent: boolean("application_sent").default(false).notNull(),
   applicationSentDate: date("application_sent_date"),
 

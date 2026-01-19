@@ -52,6 +52,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const sortParam = url.searchParams.get("sort") || "score";
   const countryParam = url.searchParams.get("country");
   const wowParam = url.searchParams.get("wow");
+  const trackParam = url.searchParams.get("track");
 
   const [allJobs, formulas] = await Promise.all([
     jobOpeningRepository.findAll(),
@@ -66,13 +67,16 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Check if any jobs have wow factor
   const hasWowJobs = allJobs.some((job) => job.wow);
 
-  // Filter jobs by country and wow if specified
+  // Filter jobs by country, wow, and track if specified
   let jobs = allJobs;
   if (countryParam && countryParam !== "all") {
     jobs = jobs.filter((job) => job.country === countryParam);
   }
   if (wowParam === "true") {
     jobs = jobs.filter((job) => job.wow);
+  }
+  if (trackParam && trackParam !== "all") {
+    jobs = jobs.filter((job) => job.track === trackParam);
   }
 
   let rankedJobs: RankedJobOpening[];
@@ -109,6 +113,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     selectedCountry: countryParam || "all",
     hasWowJobs,
     wowFilter: wowParam === "true",
+    selectedTrack: trackParam || "all",
   };
 }
 
@@ -133,7 +138,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export default function Home() {
-  const { jobs, formulas, selectedFormulaId, sortBy, availableCountries, selectedCountry, hasWowJobs, wowFilter } =
+  const { jobs, formulas, selectedFormulaId, sortBy, availableCountries, selectedCountry, hasWowJobs, wowFilter, selectedTrack } =
     useLoaderData<typeof loader>();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -179,6 +184,7 @@ export default function Home() {
           <input type="hidden" name="sort" value={sortBy} />
           <input type="hidden" name="country" value={selectedCountry} />
           <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+          <input type="hidden" name="track" value={selectedTrack} />
           <label htmlFor="formula-select" className="text-sm font-medium">
             Formula:
           </label>
@@ -203,6 +209,7 @@ export default function Home() {
           <input type="hidden" name="formula" value={selectedFormulaId || ""} />
           <input type="hidden" name="country" value={selectedCountry} />
           <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+          <input type="hidden" name="track" value={selectedTrack} />
           <label htmlFor="sort-select" className="text-sm font-medium">
             Sort by:
           </label>
@@ -225,6 +232,7 @@ export default function Home() {
             <input type="hidden" name="formula" value={selectedFormulaId || ""} />
             <input type="hidden" name="sort" value={sortBy} />
             <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+            <input type="hidden" name="track" value={selectedTrack} />
             <label htmlFor="country-select" className="text-sm font-medium">
               Country:
             </label>
@@ -253,11 +261,35 @@ export default function Home() {
             <input type="hidden" name="sort" value={sortBy} />
             <input type="hidden" name="country" value={selectedCountry} />
             <input type="hidden" name="wow" value={wowFilter ? "" : "true"} />
+            <input type="hidden" name="track" value={selectedTrack} />
             <Button type="submit" variant={wowFilter ? "default" : "outline"} size="sm">
               {wowFilter ? "★ Wow Only" : "☆ Show Wow"}
             </Button>
           </Form>
         )}
+
+        <Form method="get" className="flex gap-2 items-center">
+          <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+          <input type="hidden" name="sort" value={sortBy} />
+          <input type="hidden" name="country" value={selectedCountry} />
+          <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+          <label htmlFor="track-select" className="text-sm font-medium">
+            Track:
+          </label>
+          <Select name="track" defaultValue={selectedTrack}>
+            <SelectTrigger id="track-select" className="w-[150px]">
+              <SelectValue placeholder="Filter by track" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Tracks</SelectItem>
+              <SelectItem value="engineering">Engineering</SelectItem>
+              <SelectItem value="management">Management</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button type="submit" variant="secondary" size="sm">
+            Filter
+          </Button>
+        </Form>
       </div>
 
       <JobTable jobs={jobs} onMarkApplied={handleMarkApplied} />

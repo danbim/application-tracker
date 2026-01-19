@@ -49,6 +49,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     jobLocation: result.data.jobLocation || null,
     country: result.data.country || null,
     postingUrl: result.data.postingUrl || null,
+    track: result.data.track || null,
     dateOpened: result.data.dateOpened || null,
     salaryMin: result.data.salaryMin || null,
     salaryMax: result.data.salaryMax || null,

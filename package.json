@@ -3,6 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "format": "bunx biome format --fix",
+    "lint": "bunx biome lint",
+    "lint:fix": "bunx biome lint --fix",
+    "check": "bunx biome check",
+    "check:fix": "bunx biome check --fix",
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
@@ -40,6 +45,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.3.11",
     "@react-router/dev": "7.12.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^25.0.9",

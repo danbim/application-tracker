@@ -1,5 +1,5 @@
-import { Link } from "react-router";
-import Markdown from "react-markdown";
+import { Link } from 'react-router'
+import Markdown from 'react-markdown'
 import {
   Table,
   TableBody,
@@ -7,27 +7,27 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/ui/table";
+} from '~/components/ui/table'
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "~/components/ui/hover-card";
-import { Button } from "~/components/ui/button";
-import { Badge } from "~/components/ui/badge";
-import type { RankedJobOpening } from "~/services/scoring.service";
+} from '~/components/ui/hover-card'
+import { Button } from '~/components/ui/button'
+import { Badge } from '~/components/ui/badge'
+import type { RankedJobOpening } from '~/services/scoring.service'
 
 type JobTableProps = {
-  jobs: RankedJobOpening[];
-  onMarkApplied: (jobId: string) => void;
-};
+  jobs: RankedJobOpening[]
+  onMarkApplied: (jobId: string) => void
+}
 
 export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
   const formatDate = (date: Date | string | null) => {
-    if (!date) return "-";
-    const d = typeof date === "string" ? new Date(date) : date;
-    return d.toLocaleDateString();
-  };
+    if (!date) return '-'
+    const d = typeof date === 'string' ? new Date(date) : date
+    return d.toLocaleDateString()
+  }
 
   return (
     <Table>
@@ -45,7 +45,10 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
       <TableBody>
         {jobs.length === 0 ? (
           <TableRow>
-            <TableCell colSpan={7} className="text-center text-muted-foreground">
+            <TableCell
+              colSpan={7}
+              className="text-center text-muted-foreground"
+            >
               No job openings yet. Add one to get started.
             </TableCell>
           </TableRow>
@@ -57,13 +60,15 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
                   <HoverCardTrigger asChild>
                     <span className="cursor-help underline decoration-dotted underline-offset-2">
                       {job.title}
-                      {job.wow && " ★"}
+                      {job.wow && ' ★'}
                     </span>
                   </HoverCardTrigger>
                   <HoverCardContent className="w-96 max-h-80 overflow-y-auto">
                     <div className="space-y-2">
                       <h4 className="font-semibold">{job.title}</h4>
-                      <p className="text-sm text-muted-foreground">{job.company}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {job.company}
+                      </p>
                       <div className="prose prose-sm max-w-none">
                         <Markdown>{job.description}</Markdown>
                       </div>
@@ -72,13 +77,16 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
                 </HoverCard>
               </TableCell>
               <TableCell>{job.company}</TableCell>
-              <TableCell>{job.jobLocation || "-"}</TableCell>
+              <TableCell>{job.jobLocation || '-'}</TableCell>
               <TableCell>{formatDate(job.dateAdded)}</TableCell>
               <TableCell className="text-right font-mono">{score}</TableCell>
               <TableCell>
                 {job.applicationSent ? (
                   <Badge variant="secondary">
-                    Applied {job.applicationSentDate ? formatDate(job.applicationSentDate) : ""}
+                    Applied{' '}
+                    {job.applicationSentDate
+                      ? formatDate(job.applicationSentDate)
+                      : ''}
                   </Badge>
                 ) : (
                   <Badge variant="outline">Not Applied</Badge>
@@ -105,5 +113,5 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
         )}
       </TableBody>
     </Table>
-  );
+  )
 }

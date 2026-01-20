@@ -1,30 +1,30 @@
-import { Form } from "react-router";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import type { ScoringFormula } from "~/db/schema";
+import { Form } from 'react-router'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import type { ScoringFormula } from '~/db/schema'
 
 type FormulaFormProps = {
-  formula?: ScoringFormula;
-  errors?: Record<string, string>;
-};
+  formula?: ScoringFormula
+  errors?: Record<string, string>
+}
 
 const WEIGHT_FIELDS = [
-  { key: "impact", label: "Positive Impact" },
-  { key: "compensation", label: "Compensation" },
-  { key: "role", label: "Role / Level of Responsibility" },
-  { key: "tech", label: "Technologies" },
-  { key: "location", label: "Remote / Hybrid / Office" },
-  { key: "industry", label: "Industry" },
-  { key: "culture", label: "Engineering Culture" },
-  { key: "growth", label: "Growth Potential" },
-  { key: "profileMatch", label: "Profile Match" },
-  { key: "companySize", label: "Company Size" },
-  { key: "stress", label: "Stress Factor" },
-  { key: "jobSecurity", label: "Job Security" },
-  { key: "wowBoost", label: "Wow Boost" },
-];
+  { key: 'impact', label: 'Positive Impact' },
+  { key: 'compensation', label: 'Compensation' },
+  { key: 'role', label: 'Role / Level of Responsibility' },
+  { key: 'tech', label: 'Technologies' },
+  { key: 'location', label: 'Remote / Hybrid / Office' },
+  { key: 'industry', label: 'Industry' },
+  { key: 'culture', label: 'Engineering Culture' },
+  { key: 'growth', label: 'Growth Potential' },
+  { key: 'profileMatch', label: 'Profile Match' },
+  { key: 'companySize', label: 'Company Size' },
+  { key: 'stress', label: 'Stress Factor' },
+  { key: 'jobSecurity', label: 'Job Security' },
+  { key: 'wowBoost', label: 'Wow Boost' },
+]
 
 export function FormulaForm({ formula, errors }: FormulaFormProps) {
   return (
@@ -54,7 +54,9 @@ export function FormulaForm({ formula, errors }: FormulaFormProps) {
         <CardHeader>
           <CardTitle>Criterion Weights</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Set the weight for each criterion. Positive weights increase the score, negative weights decrease it. Use negative weights for criteria like stress.
+            Set the weight for each criterion. Positive weights increase the
+            score, negative weights decrease it. Use negative weights for
+            criteria like stress.
           </p>
         </CardHeader>
         <CardContent>
@@ -66,7 +68,9 @@ export function FormulaForm({ formula, errors }: FormulaFormProps) {
                   id={`weights.${key}`}
                   name={`weights.${key}`}
                   type="number"
-                  defaultValue={formula?.weights?.[key as keyof typeof formula.weights] ?? 1}
+                  defaultValue={
+                    formula?.weights?.[key as keyof typeof formula.weights] ?? 1
+                  }
                 />
               </div>
             ))}
@@ -75,11 +79,11 @@ export function FormulaForm({ formula, errors }: FormulaFormProps) {
       </Card>
 
       <div className="flex gap-4">
-        <Button type="submit">{formula ? "Update" : "Create"} Formula</Button>
+        <Button type="submit">{formula ? 'Update' : 'Create'} Formula</Button>
         <Button type="button" variant="outline" onClick={() => history.back()}>
           Cancel
         </Button>
       </div>
     </Form>
-  );
+  )
 }

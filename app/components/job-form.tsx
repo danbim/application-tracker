@@ -1,86 +1,90 @@
-import { useState, useCallback, useMemo } from "react";
-import { Form } from "react-router";
-import Markdown from "react-markdown";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Textarea } from "~/components/ui/textarea";
+import { useState, useCallback, } from 'react'
+import { Form } from 'react-router'
+import Markdown from 'react-markdown'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
+import { Textarea } from '~/components/ui/textarea'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { RatingInput } from "~/components/rating-input";
-import type { JobOpening } from "~/db/schema";
+} from '~/components/ui/select'
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import { RatingInput } from '~/components/rating-input'
+import type { JobOpening } from '~/db/schema'
 
 type JobFormProps = {
-  job?: JobOpening;
-  errors?: Record<string, string>;
-};
+  job?: JobOpening
+  errors?: Record<string, string>
+}
 
-const CURRENCIES = ["EUR", "USD", "GBP", "CHF"];
+const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF']
 
 const COUNTRIES = [
-  { code: "AT", name: "Austria" },
-  { code: "BE", name: "Belgium" },
-  { code: "CA", name: "Canada" },
-  { code: "DK", name: "Denmark" },
-  { code: "FI", name: "Finland" },
-  { code: "FR", name: "France" },
-  { code: "DE", name: "Germany" },
-  { code: "IE", name: "Ireland" },
-  { code: "IT", name: "Italy" },
-  { code: "NL", name: "Netherlands" },
-  { code: "NO", name: "Norway" },
-  { code: "PL", name: "Poland" },
-  { code: "PT", name: "Portugal" },
-  { code: "ES", name: "Spain" },
-  { code: "SE", name: "Sweden" },
-  { code: "CH", name: "Switzerland" },
-  { code: "GB", name: "United Kingdom" },
-  { code: "US", name: "United States" },
-];
+  { code: 'AT', name: 'Austria' },
+  { code: 'BE', name: 'Belgium' },
+  { code: 'CA', name: 'Canada' },
+  { code: 'DK', name: 'Denmark' },
+  { code: 'FI', name: 'Finland' },
+  { code: 'FR', name: 'France' },
+  { code: 'DE', name: 'Germany' },
+  { code: 'IE', name: 'Ireland' },
+  { code: 'IT', name: 'Italy' },
+  { code: 'NL', name: 'Netherlands' },
+  { code: 'NO', name: 'Norway' },
+  { code: 'PL', name: 'Poland' },
+  { code: 'PT', name: 'Portugal' },
+  { code: 'ES', name: 'Spain' },
+  { code: 'SE', name: 'Sweden' },
+  { code: 'CH', name: 'Switzerland' },
+  { code: 'GB', name: 'United Kingdom' },
+  { code: 'US', name: 'United States' },
+]
 
 const RATING_CRITERIA = [
-  { name: "ratingImpact", label: "Positive Impact" },
-  { name: "ratingCompensation", label: "Compensation" },
-  { name: "ratingRole", label: "Role / Level of Responsibility" },
-  { name: "ratingTech", label: "Technologies" },
-  { name: "ratingLocation", label: "Remote / Hybrid / Office" },
-  { name: "ratingIndustry", label: "Industry" },
-  { name: "ratingCulture", label: "Engineering Culture" },
-  { name: "ratingGrowth", label: "Growth Potential" },
-  { name: "ratingProfileMatch", label: "Profile Match" },
-  { name: "ratingCompanySize", label: "Company Size" },
-  { name: "ratingStress", label: "Stress Factor" },
-  { name: "ratingJobSecurity", label: "Job Security" },
-];
+  { name: 'ratingImpact', label: 'Positive Impact' },
+  { name: 'ratingCompensation', label: 'Compensation' },
+  { name: 'ratingRole', label: 'Role / Level of Responsibility' },
+  { name: 'ratingTech', label: 'Technologies' },
+  { name: 'ratingLocation', label: 'Remote / Hybrid / Office' },
+  { name: 'ratingIndustry', label: 'Industry' },
+  { name: 'ratingCulture', label: 'Engineering Culture' },
+  { name: 'ratingGrowth', label: 'Growth Potential' },
+  { name: 'ratingProfileMatch', label: 'Profile Match' },
+  { name: 'ratingCompanySize', label: 'Company Size' },
+  { name: 'ratingStress', label: 'Stress Factor' },
+  { name: 'ratingJobSecurity', label: 'Job Security' },
+]
 
 export function JobForm({ job, errors }: JobFormProps) {
-  const [description, setDescription] = useState(job?.description ?? "");
-  const [showPreview, setShowPreview] = useState(false);
+  const [description, setDescription] = useState(job?.description ?? '')
+  const [showPreview, setShowPreview] = useState(false)
 
-  const handlePaste = useCallback(async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-    const html = e.clipboardData.getData("text/html");
-    if (html) {
-      e.preventDefault();
-      // Dynamically import turndown only on client side when needed
-      const TurndownService = (await import("turndown")).default;
-      const turndownService = new TurndownService({
-        headingStyle: "atx",
-        codeBlockStyle: "fenced",
-      });
-      const markdown = turndownService.turndown(html);
-      const textarea = e.currentTarget;
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const newValue = description.slice(0, start) + markdown + description.slice(end);
-      setDescription(newValue);
-    }
-  }, [description]);
+  const handlePaste = useCallback(
+    async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const html = e.clipboardData.getData('text/html')
+      if (html) {
+        e.preventDefault()
+        // Dynamically import turndown only on client side when needed
+        const TurndownService = (await import('turndown')).default
+        const turndownService = new TurndownService({
+          headingStyle: 'atx',
+          codeBlockStyle: 'fenced',
+        })
+        const markdown = turndownService.turndown(html)
+        const textarea = e.currentTarget
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+        const newValue =
+          description.slice(0, start) + markdown + description.slice(end)
+        setDescription(newValue)
+      }
+    },
+    [description],
+  )
 
   return (
     <Form method="post" className="space-y-6">
@@ -116,7 +120,7 @@ export function JobForm({ job, errors }: JobFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="track">Track</Label>
-              <Select name="track" defaultValue={job?.track ?? ""}>
+              <Select name="track" defaultValue={job?.track ?? ''}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select track" />
                 </SelectTrigger>
@@ -137,19 +141,21 @@ export function JobForm({ job, errors }: JobFormProps) {
                 size="sm"
                 onClick={() => setShowPreview(!showPreview)}
               >
-                {showPreview ? "Hide Preview" : "Show Preview"}
+                {showPreview ? 'Hide Preview' : 'Show Preview'}
               </Button>
             </div>
-            <Textarea
-              id="description"
-              name="description"
-              rows={6}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              onPaste={handlePaste}
-              placeholder="Paste from LinkedIn or other sources - HTML will be converted to Markdown"
-              required
-            />
+            {!showPreview && (
+              <Textarea
+                id="description"
+                name="description"
+                rows={6}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onPaste={handlePaste}
+                placeholder="Paste from LinkedIn or other sources - HTML will be converted to Markdown"
+                required
+              />
+            )}
             {errors?.description && (
               <p className="text-sm text-red-500">{errors.description}</p>
             )}
@@ -167,12 +173,12 @@ export function JobForm({ job, errors }: JobFormProps) {
                 id="jobLocation"
                 name="jobLocation"
                 placeholder="e.g., Berlin"
-                defaultValue={job?.jobLocation ?? ""}
+                defaultValue={job?.jobLocation ?? ''}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="country">Country</Label>
-              <Select name="country" defaultValue={job?.country ?? ""}>
+              <Select name="country" defaultValue={job?.country ?? ''}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select country" />
                 </SelectTrigger>
@@ -191,7 +197,7 @@ export function JobForm({ job, errors }: JobFormProps) {
                 id="postingUrl"
                 name="postingUrl"
                 type="url"
-                defaultValue={job?.postingUrl ?? ""}
+                defaultValue={job?.postingUrl ?? ''}
               />
             </div>
           </div>
@@ -202,16 +208,12 @@ export function JobForm({ job, errors }: JobFormProps) {
               id="dateOpened"
               name="dateOpened"
               type="date"
-              defaultValue={job?.dateOpened ?? ""}
+              defaultValue={job?.dateOpened ?? ''}
             />
           </div>
 
           <div className="flex items-center space-x-2 pt-2">
-            <input
-              type="hidden"
-              name="wow"
-              value="false"
-            />
+            <input type="hidden" name="wow" value="false" />
             <input
               type="checkbox"
               id="wow"
@@ -220,7 +222,10 @@ export function JobForm({ job, errors }: JobFormProps) {
               defaultChecked={job?.wow ?? false}
               className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
             />
-            <Label htmlFor="wow" className="text-base font-medium cursor-pointer">
+            <Label
+              htmlFor="wow"
+              className="text-base font-medium cursor-pointer"
+            >
               Wow Factor — This job stands out!
             </Label>
           </div>
@@ -240,7 +245,7 @@ export function JobForm({ job, errors }: JobFormProps) {
                 name="salaryMin"
                 type="number"
                 placeholder="e.g., 70000"
-                defaultValue={job?.salaryMin ?? ""}
+                defaultValue={job?.salaryMin ?? ''}
               />
             </div>
             <div className="space-y-2">
@@ -250,12 +255,15 @@ export function JobForm({ job, errors }: JobFormProps) {
                 name="salaryMax"
                 type="number"
                 placeholder="e.g., 90000"
-                defaultValue={job?.salaryMax ?? ""}
+                defaultValue={job?.salaryMax ?? ''}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="salaryCurrency">Currency</Label>
-              <Select name="salaryCurrency" defaultValue={job?.salaryCurrency ?? ""}>
+              <Select
+                name="salaryCurrency"
+                defaultValue={job?.salaryCurrency ?? ''}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
@@ -274,7 +282,7 @@ export function JobForm({ job, errors }: JobFormProps) {
                 id="vacationDays"
                 name="vacationDays"
                 type="number"
-                defaultValue={job?.vacationDays ?? ""}
+                defaultValue={job?.vacationDays ?? ''}
               />
             </div>
           </div>
@@ -286,7 +294,7 @@ export function JobForm({ job, errors }: JobFormProps) {
                 id="pensionScheme"
                 name="pensionScheme"
                 placeholder="e.g., 5% match"
-                defaultValue={job?.pensionScheme ?? ""}
+                defaultValue={job?.pensionScheme ?? ''}
               />
             </div>
             <div className="space-y-2">
@@ -294,7 +302,7 @@ export function JobForm({ job, errors }: JobFormProps) {
               <Input
                 id="healthInsurance"
                 name="healthInsurance"
-                defaultValue={job?.healthInsurance ?? ""}
+                defaultValue={job?.healthInsurance ?? ''}
               />
             </div>
           </div>
@@ -304,7 +312,7 @@ export function JobForm({ job, errors }: JobFormProps) {
             <Input
               id="stockOptions"
               name="stockOptions"
-              defaultValue={job?.stockOptions ?? ""}
+              defaultValue={job?.stockOptions ?? ''}
             />
           </div>
         </CardContent>
@@ -317,7 +325,7 @@ export function JobForm({ job, errors }: JobFormProps) {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="workLocation">Work Type</Label>
-            <Select name="workLocation" defaultValue={job?.workLocation ?? ""}>
+            <Select name="workLocation" defaultValue={job?.workLocation ?? ''}>
               <SelectTrigger>
                 <SelectValue placeholder="Select work type" />
               </SelectTrigger>
@@ -336,7 +344,7 @@ export function JobForm({ job, errors }: JobFormProps) {
                 id="officeDistanceKm"
                 name="officeDistanceKm"
                 type="number"
-                defaultValue={job?.officeDistanceKm ?? ""}
+                defaultValue={job?.officeDistanceKm ?? ''}
               />
             </div>
             <div className="space-y-2">
@@ -347,7 +355,7 @@ export function JobForm({ job, errors }: JobFormProps) {
                 type="number"
                 min="0"
                 max="7"
-                defaultValue={job?.wfhDaysPerWeek ?? ""}
+                defaultValue={job?.wfhDaysPerWeek ?? ''}
               />
             </div>
           </div>
@@ -371,11 +379,11 @@ export function JobForm({ job, errors }: JobFormProps) {
       </Card>
 
       <div className="flex gap-4">
-        <Button type="submit">{job ? "Update" : "Create"} Job Opening</Button>
+        <Button type="submit">{job ? 'Update' : 'Create'} Job Opening</Button>
         <Button type="button" variant="outline" onClick={() => history.back()}>
           Cancel
         </Button>
       </div>
     </Form>
-  );
+  )
 }

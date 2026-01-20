@@ -1,6 +1,9 @@
-import { ScoringService } from "./scoring.service";
+import { ScoringService } from './scoring.service'
 
-export const scoringService = new ScoringService();
+export const scoringService = new ScoringService()
 
 // Re-export repositories for convenience
-export { jobOpeningRepository, scoringFormulaRepository } from "~/repositories/index.server";
+export {
+  jobOpeningRepository,
+  scoringFormulaRepository,
+} from '~/repositories/index.server'

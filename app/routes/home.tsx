@@ -1,107 +1,107 @@
-import { useState } from "react";
-import type { Route } from "./+types/home";
-import { useLoaderData, Link, Form } from "react-router";
-import { Button } from "~/components/ui/button";
+import { useState } from 'react'
+import type { Route } from './+types/home'
+import { useLoaderData, Link, Form } from 'react-router'
+import { Button } from '~/components/ui/button'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "~/components/ui/select";
-import { JobTable } from "~/components/job-table";
-import { ApplicationDialog } from "~/components/application-dialog";
+} from '~/components/ui/select'
+import { JobTable } from '~/components/job-table'
+import { ApplicationDialog } from '~/components/application-dialog'
 import {
   jobOpeningRepository,
   scoringFormulaRepository,
   scoringService,
-} from "~/services/index.server";
-import type { RankedJobOpening } from "~/services/scoring.service";
+} from '~/services/index.server'
+import type { RankedJobOpening } from '~/services/scoring.service'
 
 const COUNTRIES: Record<string, string> = {
-  DE: "Germany",
-  GB: "United Kingdom",
-  NL: "Netherlands",
-  FR: "France",
-  CH: "Switzerland",
-  AT: "Austria",
-  BE: "Belgium",
-  ES: "Spain",
-  IT: "Italy",
-  PL: "Poland",
-  SE: "Sweden",
-  DK: "Denmark",
-  NO: "Norway",
-  FI: "Finland",
-  IE: "Ireland",
-  PT: "Portugal",
-  US: "United States",
-  CA: "Canada",
-};
+  DE: 'Germany',
+  GB: 'United Kingdom',
+  NL: 'Netherlands',
+  FR: 'France',
+  CH: 'Switzerland',
+  AT: 'Austria',
+  BE: 'Belgium',
+  ES: 'Spain',
+  IT: 'Italy',
+  PL: 'Poland',
+  SE: 'Sweden',
+  DK: 'Denmark',
+  NO: 'Norway',
+  FI: 'Finland',
+  IE: 'Ireland',
+  PT: 'Portugal',
+  US: 'United States',
+  CA: 'Canada',
+}
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Job Openings - Job Tracker" },
-    { name: "description", content: "Track and manage your job applications" },
-  ];
+    { title: 'Job Openings - Job Tracker' },
+    { name: 'description', content: 'Track and manage your job applications' },
+  ]
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const url = new URL(request.url);
-  const formulaParam = url.searchParams.get("formula");
-  const sortParam = url.searchParams.get("sort") || "score";
-  const countryParam = url.searchParams.get("country");
-  const wowParam = url.searchParams.get("wow");
-  const trackParam = url.searchParams.get("track");
+  const url = new URL(request.url)
+  const formulaParam = url.searchParams.get('formula')
+  const sortParam = url.searchParams.get('sort') || 'score'
+  const countryParam = url.searchParams.get('country')
+  const wowParam = url.searchParams.get('wow')
+  const trackParam = url.searchParams.get('track')
 
   const [allJobs, formulas] = await Promise.all([
     jobOpeningRepository.findAll(),
     scoringFormulaRepository.findAll(),
-  ]);
+  ])
 
   // Get unique countries from all jobs for the filter dropdown
   const availableCountries = [
     ...new Set(allJobs.map((job) => job.country).filter(Boolean)),
-  ].sort() as string[];
+  ].sort() as string[]
 
   // Check if any jobs have wow factor
-  const hasWowJobs = allJobs.some((job) => job.wow);
+  const hasWowJobs = allJobs.some((job) => job.wow)
 
   // Filter jobs by country, wow, and track if specified
-  let jobs = allJobs;
-  if (countryParam && countryParam !== "all") {
-    jobs = jobs.filter((job) => job.country === countryParam);
+  let jobs = allJobs
+  if (countryParam && countryParam !== 'all') {
+    jobs = jobs.filter((job) => job.country === countryParam)
   }
-  if (wowParam === "true") {
-    jobs = jobs.filter((job) => job.wow);
+  if (wowParam === 'true') {
+    jobs = jobs.filter((job) => job.wow)
   }
-  if (trackParam && trackParam !== "all") {
-    jobs = jobs.filter((job) => job.track === trackParam);
+  if (trackParam && trackParam !== 'all') {
+    jobs = jobs.filter((job) => job.track === trackParam)
   }
 
-  let rankedJobs: RankedJobOpening[];
-  let selectedFormulaId: string | null = null;
+  let rankedJobs: RankedJobOpening[]
+  let selectedFormulaId: string | null = null
 
   if (formulas.length > 0) {
     // Use specified formula or default to first one
     const selectedFormula = formulaParam
       ? formulas.find((f) => f.id === formulaParam) || formulas[0]
-      : formulas[0];
-    selectedFormulaId = selectedFormula.id;
+      : formulas[0]
+    selectedFormulaId = selectedFormula.id
 
-    rankedJobs = scoringService.rankJobOpenings(jobs, selectedFormula);
+    rankedJobs = scoringService.rankJobOpenings(jobs, selectedFormula)
   } else {
     // No formulas - just list jobs with score 0
-    rankedJobs = jobs.map((job) => ({ job, score: 0 }));
+    rankedJobs = jobs.map((job) => ({ job, score: 0 }))
   }
 
   // Sort by date if requested (default is already by score from rankJobOpenings)
-  if (sortParam === "date") {
+  if (sortParam === 'date') {
     rankedJobs.sort((a, b) => {
-      const dateA = new Date(a.job.dateAdded).getTime();
-      const dateB = new Date(b.job.dateAdded).getTime();
-      return dateB - dateA; // newest first
-    });
+      const dateA = new Date(a.job.dateAdded).getTime()
+      const dateB = new Date(b.job.dateAdded).getTime()
+      return dateB - dateA // newest first
+    })
   }
 
   return {
@@ -110,48 +110,57 @@ export async function loader({ request }: Route.LoaderArgs) {
     selectedFormulaId,
     sortBy: sortParam,
     availableCountries,
-    selectedCountry: countryParam || "all",
+    selectedCountry: countryParam || 'all',
     hasWowJobs,
-    wowFilter: wowParam === "true",
-    selectedTrack: trackParam || "all",
-  };
+    wowFilter: wowParam === 'true',
+    selectedTrack: trackParam || 'all',
+  }
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
-  const intent = formData.get("intent");
+  const formData = await request.formData()
+  const intent = formData.get('intent')
 
-  if (intent === "markApplied") {
-    const jobId = formData.get("jobId") as string;
-    const applicationSentDate = formData.get("applicationSentDate") as string;
+  if (intent === 'markApplied') {
+    const jobId = formData.get('jobId') as string
+    const applicationSentDate = formData.get('applicationSentDate') as string
 
     await jobOpeningRepository.updateApplicationStatus(
       jobId,
       true,
-      applicationSentDate
-    );
+      applicationSentDate,
+    )
 
-    return { success: true };
+    return { success: true }
   }
 
-  return { success: false };
+  return { success: false }
 }
 
 export default function Home() {
-  const { jobs, formulas, selectedFormulaId, sortBy, availableCountries, selectedCountry, hasWowJobs, wowFilter, selectedTrack } =
-    useLoaderData<typeof loader>();
+  const {
+    jobs,
+    formulas,
+    selectedFormulaId,
+    sortBy,
+    availableCountries,
+    selectedCountry,
+    hasWowJobs,
+    wowFilter,
+    selectedTrack,
+  } = useLoaderData<typeof loader>()
 
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
 
   const selectedJob = selectedJobId
     ? jobs.find((j) => j.job.id === selectedJobId)?.job
-    : null;
+    : null
 
   const handleMarkApplied = (jobId: string) => {
-    setSelectedJobId(jobId);
-    setDialogOpen(true);
-  };
+    setSelectedJobId(jobId)
+    setDialogOpen(true)
+  }
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -170,10 +179,10 @@ export default function Home() {
       {formulas.length === 0 && (
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
           <p className="text-yellow-800">
-            No scoring formulas found. Jobs will be listed without scores.{" "}
+            No scoring formulas found. Jobs will be listed without scores.{' '}
             <Link to="/formulas/new" className="underline font-medium">
               Create a formula
-            </Link>{" "}
+            </Link>{' '}
             to start scoring your job opportunities.
           </p>
         </div>
@@ -183,7 +192,7 @@ export default function Home() {
         <Form method="get" className="flex gap-2 items-center">
           <input type="hidden" name="sort" value={sortBy} />
           <input type="hidden" name="country" value={selectedCountry} />
-          <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+          <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
           <input type="hidden" name="track" value={selectedTrack} />
           <label htmlFor="formula-select" className="text-sm font-medium">
             Formula:
@@ -206,9 +215,9 @@ export default function Home() {
         </Form>
 
         <Form method="get" className="flex gap-2 items-center">
-          <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+          <input type="hidden" name="formula" value={selectedFormulaId || ''} />
           <input type="hidden" name="country" value={selectedCountry} />
-          <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+          <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
           <input type="hidden" name="track" value={selectedTrack} />
           <label htmlFor="sort-select" className="text-sm font-medium">
             Sort by:
@@ -229,9 +238,13 @@ export default function Home() {
 
         {availableCountries.length > 0 && (
           <Form method="get" className="flex gap-2 items-center">
-            <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+            <input
+              type="hidden"
+              name="formula"
+              value={selectedFormulaId || ''}
+            />
             <input type="hidden" name="sort" value={sortBy} />
-            <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+            <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
             <input type="hidden" name="track" value={selectedTrack} />
             <label htmlFor="country-select" className="text-sm font-medium">
               Country:
@@ -257,22 +270,30 @@ export default function Home() {
 
         {hasWowJobs && (
           <Form method="get" className="flex gap-2 items-center">
-            <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+            <input
+              type="hidden"
+              name="formula"
+              value={selectedFormulaId || ''}
+            />
             <input type="hidden" name="sort" value={sortBy} />
             <input type="hidden" name="country" value={selectedCountry} />
-            <input type="hidden" name="wow" value={wowFilter ? "" : "true"} />
+            <input type="hidden" name="wow" value={wowFilter ? '' : 'true'} />
             <input type="hidden" name="track" value={selectedTrack} />
-            <Button type="submit" variant={wowFilter ? "default" : "outline"} size="sm">
-              {wowFilter ? "★ Wow Only" : "☆ Show Wow"}
+            <Button
+              type="submit"
+              variant={wowFilter ? 'default' : 'outline'}
+              size="sm"
+            >
+              {wowFilter ? '★ Wow Only' : '☆ Show Wow'}
             </Button>
           </Form>
         )}
 
         <Form method="get" className="flex gap-2 items-center">
-          <input type="hidden" name="formula" value={selectedFormulaId || ""} />
+          <input type="hidden" name="formula" value={selectedFormulaId || ''} />
           <input type="hidden" name="sort" value={sortBy} />
           <input type="hidden" name="country" value={selectedCountry} />
-          <input type="hidden" name="wow" value={wowFilter ? "true" : ""} />
+          <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
           <label htmlFor="track-select" className="text-sm font-medium">
             Track:
           </label>
@@ -301,5 +322,5 @@ export default function Home() {
         onOpenChange={setDialogOpen}
       />
     </div>
-  );
+  )
 }

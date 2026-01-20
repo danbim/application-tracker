@@ -1,6 +1,6 @@
-import type { Route } from "./+types/formulas";
-import { useLoaderData, Link } from "react-router";
-import { Button } from "~/components/ui/button";
+import type { Route } from './+types/formulas'
+import { useLoaderData, Link } from 'react-router'
+import { Button } from '~/components/ui/button'
 import {
   Table,
   TableBody,
@@ -8,23 +8,23 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "~/components/ui/table";
-import { scoringFormulaRepository } from "~/services/index.server";
+} from '~/components/ui/table'
+import { scoringFormulaRepository } from '~/services/index.server'
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Scoring Formulas - Job Tracker" },
-    { name: "description", content: "Manage your job scoring formulas" },
-  ];
+    { title: 'Scoring Formulas - Job Tracker' },
+    { name: 'description', content: 'Manage your job scoring formulas' },
+  ]
 }
 
 export async function loader({}: Route.LoaderArgs) {
-  const formulas = await scoringFormulaRepository.findAll();
-  return { formulas };
+  const formulas = await scoringFormulaRepository.findAll()
+  return { formulas }
 }
 
 export default function FormulasList() {
-  const { formulas } = useLoaderData<typeof loader>();
+  const { formulas } = useLoaderData<typeof loader>()
 
   return (
     <div className="container mx-auto py-8">
@@ -50,7 +50,10 @@ export default function FormulasList() {
         <TableBody>
           {formulas.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={2} className="text-center text-muted-foreground">
+              <TableCell
+                colSpan={2}
+                className="text-center text-muted-foreground"
+              >
                 No formulas yet. Create one to start ranking jobs.
               </TableCell>
             </TableRow>
@@ -71,5 +74,5 @@ export default function FormulasList() {
         </TableBody>
       </Table>
     </div>
-  );
+  )
 }

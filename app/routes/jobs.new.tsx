@@ -1,32 +1,32 @@
-import type { Route } from "./+types/jobs.new";
-import { redirect, useActionData } from "react-router";
-import { JobForm } from "~/components/job-form";
-import { jobOpeningSchema } from "~/schemas/job-opening.schema";
-import { jobOpeningRepository } from "~/services/index.server";
+import type { Route } from './+types/jobs.new'
+import { redirect, useActionData } from 'react-router'
+import { JobForm } from '~/components/job-form'
+import { jobOpeningSchema } from '~/schemas/job-opening.schema'
+import { jobOpeningRepository } from '~/services/index.server'
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Add Job Opening - Job Tracker" },
-    { name: "description", content: "Create a new job opening" },
-  ];
+    { title: 'Add Job Opening - Job Tracker' },
+    { name: 'description', content: 'Create a new job opening' },
+  ]
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  const formData = await request.formData();
+  const formData = await request.formData()
   const data = {
     ...Object.fromEntries(formData),
     // Handle checkbox: if checked, last value is "true"; use getAll to check
-    wow: formData.getAll("wow").includes("true"),
-  };
+    wow: formData.getAll('wow').includes('true'),
+  }
 
-  const result = jobOpeningSchema.safeParse(data);
+  const result = jobOpeningSchema.safeParse(data)
 
   if (!result.success) {
-    const errors: Record<string, string> = {};
+    const errors: Record<string, string> = {}
     result.error.issues.forEach((issue) => {
-      errors[issue.path[0] as string] = issue.message;
-    });
-    return { errors };
+      errors[issue.path[0] as string] = issue.message
+    })
+    return { errors }
   }
 
   // Transform empty strings to null for optional fields
@@ -47,20 +47,20 @@ export async function action({ request }: Route.ActionArgs) {
     workLocation: result.data.workLocation || null,
     officeDistanceKm: result.data.officeDistanceKm || null,
     wfhDaysPerWeek: result.data.wfhDaysPerWeek || null,
-  };
+  }
 
-  await jobOpeningRepository.create(jobData);
+  await jobOpeningRepository.create(jobData)
 
-  return redirect("/");
+  return redirect('/')
 }
 
 export default function NewJob() {
-  const actionData = useActionData<typeof action>();
+  const actionData = useActionData<typeof action>()
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
       <h1 className="text-3xl font-bold mb-6">Add Job Opening</h1>
       <JobForm errors={actionData?.errors} />
     </div>
-  );
+  )
 }

@@ -1,21 +1,21 @@
-import { Form } from "react-router";
+import { Form } from 'react-router'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "~/components/ui/dialog";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+} from '~/components/ui/dialog'
+import { Button } from '~/components/ui/button'
+import { Input } from '~/components/ui/input'
+import { Label } from '~/components/ui/label'
 
 type ApplicationDialogProps = {
-  jobId: string | null;
-  jobTitle?: string;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-};
+  jobId: string | null
+  jobTitle?: string
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
 
 export function ApplicationDialog({
   jobId,
@@ -23,7 +23,7 @@ export function ApplicationDialog({
   open,
   onOpenChange,
 }: ApplicationDialogProps) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toISOString().split('T')[0]
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,7 +33,7 @@ export function ApplicationDialog({
         </DialogHeader>
         <Form method="post" action="/?index">
           <input type="hidden" name="intent" value="markApplied" />
-          <input type="hidden" name="jobId" value={jobId ?? ""} />
+          <input type="hidden" name="jobId" value={jobId ?? ''} />
 
           <div className="space-y-4 py-4">
             <p className="text-sm text-muted-foreground">
@@ -52,7 +52,11 @@ export function ApplicationDialog({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" onClick={() => onOpenChange(false)}>
@@ -62,5 +66,5 @@ export function ApplicationDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

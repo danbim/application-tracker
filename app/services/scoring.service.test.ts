@@ -1,16 +1,16 @@
-import { describe, it, expect } from "bun:test";
-import { ScoringService } from "./scoring.service";
-import type { JobOpening, ScoringFormula } from "~/db/schema";
+import { describe, it, expect } from 'bun:test'
+import { ScoringService } from './scoring.service'
+import type { JobOpening, ScoringFormula } from '~/db/schema'
 
-describe("ScoringService", () => {
-  const service = new ScoringService();
+describe('ScoringService', () => {
+  const service = new ScoringService()
 
   const createJobOpening = (ratings: Partial<JobOpening>): JobOpening =>
     ({
-      id: "test-id",
-      title: "Test Job",
-      company: "Test Co",
-      description: "Test description",
+      id: 'test-id',
+      title: 'Test Job',
+      company: 'Test Co',
+      description: 'Test description',
       ratingImpact: null,
       ratingCompensation: null,
       ratingRole: null,
@@ -25,18 +25,18 @@ describe("ScoringService", () => {
       ratingJobSecurity: null,
       wow: false,
       ...ratings,
-    }) as JobOpening;
+    }) as JobOpening
 
-  const createFormula = (weights: ScoringFormula["weights"]): ScoringFormula =>
+  const createFormula = (weights: ScoringFormula['weights']): ScoringFormula =>
     ({
-      id: "formula-id",
-      name: "Test Formula",
+      id: 'formula-id',
+      name: 'Test Formula',
       weights,
-    }) as ScoringFormula;
+    }) as ScoringFormula
 
-  describe("calculateScore", () => {
-    it("should return 0 for job with no ratings", () => {
-      const job = createJobOpening({});
+  describe('calculateScore', () => {
+    it('should return 0 for job with no ratings', () => {
+      const job = createJobOpening({})
       const formula = createFormula({
         impact: 1,
         compensation: 1,
@@ -51,18 +51,18 @@ describe("ScoringService", () => {
         stress: 1,
         jobSecurity: 1,
         wowBoost: 0,
-      });
+      })
 
-      const score = service.calculateScore(job, formula);
-      expect(score).toBe(0);
-    });
+      const score = service.calculateScore(job, formula)
+      expect(score).toBe(0)
+    })
 
-    it("should calculate weighted sum of ratings", () => {
+    it('should calculate weighted sum of ratings', () => {
       const job = createJobOpening({
         ratingImpact: 1,
         ratingGrowth: 1,
         ratingStress: -1,
-      });
+      })
       const formula = createFormula({
         impact: 2,
         compensation: 0,
@@ -77,18 +77,18 @@ describe("ScoringService", () => {
         stress: 1,
         jobSecurity: 0,
         wowBoost: 0,
-      });
+      })
 
       // (1 * 2) + (1 * 3) + (-1 * 1) = 2 + 3 - 1 = 4
-      const score = service.calculateScore(job, formula);
-      expect(score).toBe(4);
-    });
+      const score = service.calculateScore(job, formula)
+      expect(score).toBe(4)
+    })
 
-    it("should handle all negative ratings", () => {
+    it('should handle all negative ratings', () => {
       const job = createJobOpening({
         ratingImpact: -1,
         ratingCompensation: -1,
-      });
+      })
       const formula = createFormula({
         impact: 2,
         compensation: 2,
@@ -103,19 +103,19 @@ describe("ScoringService", () => {
         stress: 0,
         jobSecurity: 0,
         wowBoost: 0,
-      });
+      })
 
       // (-1 * 2) + (-1 * 2) = -4
-      const score = service.calculateScore(job, formula);
-      expect(score).toBe(-4);
-    });
-  });
+      const score = service.calculateScore(job, formula)
+      expect(score).toBe(-4)
+    })
+  })
 
-  describe("rankJobOpenings", () => {
-    it("should sort jobs by score descending", () => {
-      const job1 = createJobOpening({ id: "1", ratingImpact: 1 });
-      const job2 = createJobOpening({ id: "2", ratingImpact: -1 });
-      const job3 = createJobOpening({ id: "3", ratingImpact: 0 });
+  describe('rankJobOpenings', () => {
+    it('should sort jobs by score descending', () => {
+      const job1 = createJobOpening({ id: '1', ratingImpact: 1 })
+      const job2 = createJobOpening({ id: '2', ratingImpact: -1 })
+      const job3 = createJobOpening({ id: '3', ratingImpact: 0 })
 
       const formula = createFormula({
         impact: 1,
@@ -131,16 +131,16 @@ describe("ScoringService", () => {
         stress: 0,
         jobSecurity: 0,
         wowBoost: 0,
-      });
+      })
 
-      const ranked = service.rankJobOpenings([job1, job2, job3], formula);
+      const ranked = service.rankJobOpenings([job1, job2, job3], formula)
 
-      expect(ranked[0].job.id).toBe("1");
-      expect(ranked[0].score).toBe(1);
-      expect(ranked[1].job.id).toBe("3");
-      expect(ranked[1].score).toBe(0);
-      expect(ranked[2].job.id).toBe("2");
-      expect(ranked[2].score).toBe(-1);
-    });
-  });
-});
+      expect(ranked[0].job.id).toBe('1')
+      expect(ranked[0].score).toBe(1)
+      expect(ranked[1].job.id).toBe('3')
+      expect(ranked[1].score).toBe(0)
+      expect(ranked[2].job.id).toBe('2')
+      expect(ranked[2].score).toBe(-1)
+    })
+  })
+})

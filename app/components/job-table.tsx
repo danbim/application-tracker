@@ -33,8 +33,8 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Title</TableHead>
           <TableHead>Company</TableHead>
+          <TableHead>Title</TableHead>
           <TableHead>Location</TableHead>
           <TableHead>Date Added</TableHead>
           <TableHead className="text-right">Score</TableHead>
@@ -55,6 +55,7 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
         ) : (
           jobs.map(({ job, score }) => (
             <TableRow key={job.id}>
+              <TableCell>{job.company}</TableCell>
               <TableCell className="font-medium">
                 <HoverCard>
                   <HoverCardTrigger asChild>
@@ -76,7 +77,6 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
                   </HoverCardContent>
                 </HoverCard>
               </TableCell>
-              <TableCell>{job.company}</TableCell>
               <TableCell>{job.jobLocation || '-'}</TableCell>
               <TableCell>{formatDate(job.dateAdded)}</TableCell>
               <TableCell className="text-right font-mono">{score}</TableCell>

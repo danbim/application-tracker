@@ -1,9 +1,9 @@
-import type { Route } from './+types/jobs.$id.edit'
-import { redirect, useLoaderData, useActionData, Form } from 'react-router'
-import { Button } from '~/components/ui/button'
+import { Form, redirect, useActionData, useLoaderData } from 'react-router'
 import { JobForm } from '~/components/job-form'
+import { Button } from '~/components/ui/button'
 import { jobOpeningSchema } from '~/schemas/job-opening.schema'
 import { jobOpeningRepository } from '~/services/index.server'
+import type { Route } from './+types/jobs.$id.edit'
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -17,7 +17,11 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const job = await jobOpeningRepository.findById(params.id!)
+  const { id } = params
+  if (!id) {
+    throw new Response('Bad Request', { status: 400 })
+  }
+  const job = await jobOpeningRepository.findById(id)
 
   if (!job) {
     throw new Response('Not Found', { status: 404 })
@@ -27,11 +31,16 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
+  const { id } = params
+  if (!id) {
+    throw new Response('Bad Request', { status: 400 })
+  }
+
   const formData = await request.formData()
   const intent = formData.get('intent')
 
   if (intent === 'delete') {
-    await jobOpeningRepository.delete(params.id!)
+    await jobOpeningRepository.delete(id)
     return redirect('/')
   }
 
@@ -71,7 +80,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     wfhDaysPerWeek: result.data.wfhDaysPerWeek || null,
   }
 
-  await jobOpeningRepository.update(params.id!, jobData)
+  await jobOpeningRepository.update(id, jobData)
 
   return redirect('/')
 }

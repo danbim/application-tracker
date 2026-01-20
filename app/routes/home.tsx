@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import type { Route } from './+types/home'
-import { useLoaderData, Link, Form } from 'react-router'
+import { Form, Link, useLoaderData } from 'react-router'
+import { ApplicationDialog } from '~/components/application-dialog'
+import { JobTable } from '~/components/job-table'
 import { Button } from '~/components/ui/button'
 import {
   Select,
@@ -9,14 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import { JobTable } from '~/components/job-table'
-import { ApplicationDialog } from '~/components/application-dialog'
 import {
   jobOpeningRepository,
   scoringFormulaRepository,
   scoringService,
 } from '~/services/index.server'
 import type { RankedJobOpening } from '~/services/scoring.service'
+import type { Route } from './+types/home'
 
 const COUNTRIES: Record<string, string> = {
   DE: 'Germany',
@@ -39,7 +39,7 @@ const COUNTRIES: Record<string, string> = {
   CA: 'Canada',
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: 'Job Openings - Job Tracker' },
     { name: 'description', content: 'Track and manage your job applications' },

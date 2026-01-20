@@ -1,10 +1,10 @@
-import type { Route } from './+types/jobs.new'
 import { redirect, useActionData } from 'react-router'
 import { JobForm } from '~/components/job-form'
 import { jobOpeningSchema } from '~/schemas/job-opening.schema'
 import { jobOpeningRepository } from '~/services/index.server'
+import type { Route } from './+types/jobs.new'
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: 'Add Job Opening - Job Tracker' },
     { name: 'description', content: 'Create a new job opening' },

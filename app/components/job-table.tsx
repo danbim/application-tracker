@@ -1,5 +1,12 @@
-import { Link } from 'react-router'
 import Markdown from 'react-markdown'
+import { Link } from 'react-router'
+import { Badge } from '~/components/ui/badge'
+import { Button } from '~/components/ui/button'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '~/components/ui/hover-card'
 import {
   Table,
   TableBody,
@@ -8,13 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '~/components/ui/hover-card'
-import { Button } from '~/components/ui/button'
-import { Badge } from '~/components/ui/badge'
 import type { RankedJobOpening } from '~/services/scoring.service'
 
 type JobTableProps = {

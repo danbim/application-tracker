@@ -1,10 +1,10 @@
-import type { Route } from './+types/formulas.new'
 import { redirect, useActionData } from 'react-router'
 import { FormulaForm } from '~/components/formula-form'
 import { scoringFormulaSchema } from '~/schemas/scoring-formula.schema'
 import { scoringFormulaRepository } from '~/services/index.server'
+import type { Route } from './+types/formulas.new'
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: 'Create Scoring Formula - Job Tracker' },
     { name: 'description', content: 'Create a new scoring formula' },

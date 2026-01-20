@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'bun:test'
-import { ScoringService } from './scoring.service'
+import { describe, expect, it } from 'bun:test'
 import type { JobOpening, ScoringFormula } from '~/db/schema'
+import { ScoringService } from './scoring.service'
 
 describe('ScoringService', () => {
   const service = new ScoringService()

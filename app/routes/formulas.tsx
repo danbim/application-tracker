@@ -1,5 +1,4 @@
-import type { Route } from './+types/formulas'
-import { useLoaderData, Link } from 'react-router'
+import { Link, useLoaderData } from 'react-router'
 import { Button } from '~/components/ui/button'
 import {
   Table,
@@ -11,14 +10,14 @@ import {
 } from '~/components/ui/table'
 import { scoringFormulaRepository } from '~/services/index.server'
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: 'Scoring Formulas - Job Tracker' },
     { name: 'description', content: 'Manage your job scoring formulas' },
   ]
 }
 
-export async function loader({}: Route.LoaderArgs) {
+export async function loader() {
   const formulas = await scoringFormulaRepository.findAll()
   return { formulas }
 }

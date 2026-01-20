@@ -1,7 +1,7 @@
-import { eq, desc } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
-import { jobOpenings, type JobOpening, type NewJobOpening } from '~/db/schema'
 import type * as schema from '~/db/schema'
+import { type JobOpening, jobOpenings, type NewJobOpening } from '~/db/schema'
 
 export class JobOpeningRepository {
   constructor(private db: PostgresJsDatabase<typeof schema>) {}

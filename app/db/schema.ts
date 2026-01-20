@@ -1,14 +1,14 @@
 import {
-  pgTable,
-  uuid,
-  varchar,
-  text,
-  integer,
   boolean,
-  timestamp,
   date,
+  integer,
   jsonb,
   pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
 } from 'drizzle-orm/pg-core'
 
 export const workLocationEnum = pgEnum('work_location', [

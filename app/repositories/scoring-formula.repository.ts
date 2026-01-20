@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
-import {
-  scoringFormulas,
-  type ScoringFormula,
-  type NewScoringFormula,
-} from '~/db/schema'
 import type * as schema from '~/db/schema'
+import {
+  type NewScoringFormula,
+  type ScoringFormula,
+  scoringFormulas,
+} from '~/db/schema'
 
 export class ScoringFormulaRepository {
   constructor(private db: PostgresJsDatabase<typeof schema>) {}

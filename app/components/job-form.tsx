@@ -1,10 +1,11 @@
-import { useState, useCallback, } from 'react'
-import { Form } from 'react-router'
+import { useCallback, useState } from 'react'
 import Markdown from 'react-markdown'
+import { Form } from 'react-router'
+import { RatingInput } from '~/components/rating-input'
 import { Button } from '~/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
-import { Textarea } from '~/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -12,8 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
-import { RatingInput } from '~/components/rating-input'
+import { Textarea } from '~/components/ui/textarea'
 import type { JobOpening } from '~/db/schema'
 
 type JobFormProps = {

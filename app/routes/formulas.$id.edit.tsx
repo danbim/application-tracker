@@ -1,9 +1,9 @@
-import type { Route } from './+types/formulas.$id.edit'
-import { redirect, useLoaderData, useActionData, Form } from 'react-router'
-import { Button } from '~/components/ui/button'
+import { Form, redirect, useActionData, useLoaderData } from 'react-router'
 import { FormulaForm } from '~/components/formula-form'
+import { Button } from '~/components/ui/button'
 import { scoringFormulaSchema } from '~/schemas/scoring-formula.schema'
 import { scoringFormulaRepository } from '~/services/index.server'
+import type { Route } from './+types/formulas.$id.edit'
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -17,7 +17,11 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const formula = await scoringFormulaRepository.findById(params.id!)
+  const { id } = params
+  if (!id) {
+    throw new Response('Bad Request', { status: 400 })
+  }
+  const formula = await scoringFormulaRepository.findById(id)
 
   if (!formula) {
     throw new Response('Not Found', { status: 404 })
@@ -27,11 +31,16 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
+  const { id } = params
+  if (!id) {
+    throw new Response('Bad Request', { status: 400 })
+  }
+
   const formData = await request.formData()
   const intent = formData.get('intent')
 
   if (intent === 'delete') {
-    await scoringFormulaRepository.delete(params.id!)
+    await scoringFormulaRepository.delete(id)
     return redirect('/formulas')
   }
 
@@ -65,7 +74,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     return { errors }
   }
 
-  await scoringFormulaRepository.update(params.id!, result.data)
+  await scoringFormulaRepository.update(id, result.data)
 
   return redirect('/formulas')
 }

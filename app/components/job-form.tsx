@@ -1,7 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { Form } from "react-router";
 import Markdown from "react-markdown";
-import TurndownService from "turndown";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -16,11 +15,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { RatingInput } from "~/components/rating-input";
 import type { JobOpening } from "~/db/schema";
-
-const turndownService = new TurndownService({
-  headingStyle: "atx",
-  codeBlockStyle: "fenced",
-});
 
 type JobFormProps = {
   job?: JobOpening;
@@ -69,10 +63,16 @@ export function JobForm({ job, errors }: JobFormProps) {
   const [description, setDescription] = useState(job?.description ?? "");
   const [showPreview, setShowPreview] = useState(false);
 
-  const handlePaste = useCallback((e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+  const handlePaste = useCallback(async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const html = e.clipboardData.getData("text/html");
     if (html) {
       e.preventDefault();
+      // Dynamically import turndown only on client side when needed
+      const TurndownService = (await import("turndown")).default;
+      const turndownService = new TurndownService({
+        headingStyle: "atx",
+        codeBlockStyle: "fenced",
+      });
       const markdown = turndownService.turndown(html);
       const textarea = e.currentTarget;
       const start = textarea.selectionStart;

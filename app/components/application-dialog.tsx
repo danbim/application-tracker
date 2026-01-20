@@ -26,18 +26,24 @@ export function ApplicationDialog({
 }: ApplicationDialogProps) {
   const today = new Date().toISOString().split('T')[0]
   const fetcher = useFetcher()
-  const wasSubmitting = useRef(false)
+  const prevState = useRef(fetcher.state)
 
-  // Close dialog when submission completes
+  // Close dialog when submission completes (idle after submitting/loading)
   useEffect(() => {
-    if (fetcher.state === 'submitting') {
-      wasSubmitting.current = true
-    }
-    if (wasSubmitting.current && fetcher.state === 'idle') {
-      wasSubmitting.current = false
+    const wasSubmittingOrLoading =
+      prevState.current === 'submitting' || prevState.current === 'loading'
+    if (wasSubmittingOrLoading && fetcher.state === 'idle') {
       onOpenChange(false)
     }
+    prevState.current = fetcher.state
   }, [fetcher.state, onOpenChange])
+
+  // Reset fetcher state tracking when dialog opens
+  useEffect(() => {
+    if (open) {
+      prevState.current = 'idle'
+    }
+  }, [open])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

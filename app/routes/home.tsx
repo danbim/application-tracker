@@ -134,6 +134,14 @@ export async function action({ request }: Route.ActionArgs) {
     return { success: true }
   }
 
+  if (intent === 'markUnapplied') {
+    const jobId = formData.get('jobId') as string
+
+    await jobOpeningRepository.updateApplicationStatus(jobId, false, null)
+
+    return { success: true }
+  }
+
   return { success: false }
 }
 

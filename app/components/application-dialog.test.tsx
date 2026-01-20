@@ -1,0 +1,159 @@
+import userEvent from '@testing-library/user-event'
+import { render, screen } from '~/test-utils'
+import { describe, expect, it, vi } from 'vitest'
+import { ApplicationDialog } from './application-dialog'
+
+// Mock react-router's useFetcher
+const mockSubmit = vi.fn()
+let mockFetcherState = 'idle'
+
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useFetcher: () => ({
+      state: mockFetcherState,
+      submit: mockSubmit,
+      Form: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+        <form {...props}>{children}</form>
+      ),
+    }),
+  }
+})
+
+describe('ApplicationDialog', () => {
+  const mockOnOpenChange = vi.fn()
+
+  beforeEach(() => {
+    mockOnOpenChange.mockClear()
+    mockSubmit.mockClear()
+    mockFetcherState = 'idle'
+  })
+
+  describe('rendering', () => {
+    it('renders dialog title', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Software Engineer"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      expect(screen.getByText('Mark Application Sent')).toBeInTheDocument()
+    })
+
+    it('shows job title in the dialog', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Senior Developer"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      expect(screen.getByText(/Senior Developer/)).toBeInTheDocument()
+    })
+
+    it('renders date input with today as default', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      const dateInput = screen.getByLabelText('Application Date')
+      expect(dateInput).toBeInTheDocument()
+      expect(dateInput).toHaveAttribute('type', 'date')
+
+      // Check it defaults to today
+      const today = new Date().toISOString().split('T')[0]
+      expect(dateInput).toHaveValue(today)
+    })
+
+    it('renders Cancel and Confirm buttons', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Confirm' })).toBeInTheDocument()
+    })
+  })
+
+  describe('hidden inputs', () => {
+    it('includes hidden input for intent', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      // Dialog content is rendered in a portal, so we search the whole document
+      const intentInput = document.querySelector('input[name="intent"][value="markApplied"]')
+      expect(intentInput).toBeInTheDocument()
+    })
+
+    it('includes hidden input for jobId', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-456"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      // Dialog content is rendered in a portal, so we search the whole document
+      const jobIdInput = document.querySelector('input[name="jobId"][value="job-456"]')
+      expect(jobIdInput).toBeInTheDocument()
+    })
+  })
+
+  describe('cancel button', () => {
+    it('calls onOpenChange(false) when Cancel is clicked', async () => {
+      const user = userEvent.setup()
+
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      expect(mockOnOpenChange).toHaveBeenCalledWith(false)
+    })
+  })
+
+  describe('dialog state', () => {
+    it('does not render content when open is false', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={false}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      expect(screen.queryByText('Mark Application Sent')).not.toBeInTheDocument()
+    })
+  })
+})

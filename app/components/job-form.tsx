@@ -93,20 +93,19 @@ export function JobForm({ job, errors }: JobFormProps) {
           <CardTitle>Basic Information</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="title">Job Title *</Label>
+              <Label htmlFor="postingUrl">Posting URL</Label>
               <Input
-                id="title"
-                name="title"
-                defaultValue={job?.title}
-                required
+                id="postingUrl"
+                name="postingUrl"
+                type="url"
+                defaultValue={job?.postingUrl ?? ''}
               />
-              {errors?.title && (
-                <p className="text-sm text-red-500">{errors.title}</p>
-              )}
             </div>
-            <div className="space-y-2">
+          </div>
+          <div className="grid grid-cols-4 gap-4">
+            <div className="col-span-1 space-y-2">
               <Label htmlFor="company">Company *</Label>
               <Input
                 id="company"
@@ -118,17 +117,17 @@ export function JobForm({ job, errors }: JobFormProps) {
                 <p className="text-sm text-red-500">{errors.company}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="track">Track</Label>
-              <Select name="track" defaultValue={job?.track ?? ''}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select track" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="engineering">Engineering</SelectItem>
-                  <SelectItem value="management">Management</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="col-span-3 space-y-2">
+              <Label htmlFor="title">Job Title *</Label>
+              <Input
+                id="title"
+                name="title"
+                defaultValue={job?.title}
+                required
+              />
+              {errors?.title && (
+                <p className="text-sm text-red-500">{errors.title}</p>
+              )}
             </div>
           </div>
 
@@ -166,8 +165,21 @@ export function JobForm({ job, errors }: JobFormProps) {
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-4 gap-4">
             <div className="space-y-2">
+              <Label htmlFor="track">Track</Label>
+              <Select name="track" defaultValue={job?.track ?? ''}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select track" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="engineering">Engineering</SelectItem>
+                  <SelectItem value="management">Management</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="col-span-2 space-y-2">
               <Label htmlFor="jobLocation">City/Region</Label>
               <Input
                 id="jobLocation"
@@ -190,15 +202,6 @@ export function JobForm({ job, errors }: JobFormProps) {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="postingUrl">Posting URL</Label>
-              <Input
-                id="postingUrl"
-                name="postingUrl"
-                type="url"
-                defaultValue={job?.postingUrl ?? ''}
-              />
             </div>
           </div>
 

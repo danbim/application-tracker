@@ -13,7 +13,9 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "db:migrate": "bunx drizzle-kit migrate",
-    "db:generate": "bunx drizzle-kit generate"
+    "db:generate": "bunx drizzle-kit generate",
+    "db:backup": "mkdir -p backups && docker exec job-tracker-db pg_dump -U postgres job_tracker > backups/backup-$(date +%Y%m%d-%H%M%S).sql && echo 'Backup created:' && ls -la backups/*.sql | tail -1",
+    "db:restore": "docker exec job-tracker-db dropdb -U postgres --if-exists job_tracker && docker exec job-tracker-db createdb -U postgres job_tracker && docker exec -i job-tracker-db psql -U postgres job_tracker"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

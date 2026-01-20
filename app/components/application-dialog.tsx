@@ -1,4 +1,5 @@
-import { Form } from 'react-router'
+import { useEffect, useRef } from 'react'
+import { useFetcher } from 'react-router'
 import { Button } from '~/components/ui/button'
 import {
   Dialog,
@@ -24,6 +25,19 @@ export function ApplicationDialog({
   onOpenChange,
 }: ApplicationDialogProps) {
   const today = new Date().toISOString().split('T')[0]
+  const fetcher = useFetcher()
+  const wasSubmitting = useRef(false)
+
+  // Close dialog when submission completes
+  useEffect(() => {
+    if (fetcher.state === 'submitting') {
+      wasSubmitting.current = true
+    }
+    if (wasSubmitting.current && fetcher.state === 'idle') {
+      wasSubmitting.current = false
+      onOpenChange(false)
+    }
+  }, [fetcher.state, onOpenChange])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -31,7 +45,7 @@ export function ApplicationDialog({
         <DialogHeader>
           <DialogTitle>Mark Application Sent</DialogTitle>
         </DialogHeader>
-        <Form method="post" action="/?index">
+        <fetcher.Form method="post" action="/?index">
           <input type="hidden" name="intent" value="markApplied" />
           <input type="hidden" name="jobId" value={jobId ?? ''} />
 
@@ -59,11 +73,11 @@ export function ApplicationDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" onClick={() => onOpenChange(false)}>
-              Confirm
+            <Button type="submit" disabled={fetcher.state !== 'idle'}>
+              {fetcher.state !== 'idle' ? 'Saving...' : 'Confirm'}
             </Button>
           </DialogFooter>
-        </Form>
+        </fetcher.Form>
       </DialogContent>
     </Dialog>
   )

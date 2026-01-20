@@ -33,6 +33,7 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead></TableHead>
           <TableHead>Company</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Location</TableHead>
@@ -55,6 +56,13 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
         ) : (
           jobs.map(({ job, score }) => (
             <TableRow key={job.id}>
+              <TableCell>
+                <div className="flex gap-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link to={`/jobs/${job.id}/edit`}>Edit</Link>
+                    </Button>
+                </div>
+              </TableCell>
               <TableCell>{job.company}</TableCell>
               <TableCell className="font-medium">
                 <HoverCard>
@@ -94,9 +102,6 @@ export function JobTable({ jobs, onMarkApplied }: JobTableProps) {
               </TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <Button asChild variant="ghost" size="sm">
-                    <Link to={`/jobs/${job.id}/edit`}>Edit</Link>
-                  </Button>
                   {!job.applicationSent && (
                     <Button
                       variant="ghost"

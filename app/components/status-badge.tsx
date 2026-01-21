@@ -82,13 +82,13 @@ export function StatusBadge({
 
   return (
     <Select value={status} onValueChange={handleStatusChange}>
-      <SelectTrigger className="w-auto border-0 p-0 h-auto focus:ring-0">
+      <SelectTrigger className="w-auto border-0 p-0 h-auto focus:ring-0 shadow-none">
         <Badge variant={config.variant} className={config.className}>
           {config.label}
           {status === 'applied' && formatDate(appliedAt)}
         </Badge>
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent position="popper" align="start">
         {ALL_STATUSES.map((s) => (
           <SelectItem key={s} value={s}>
             <Badge

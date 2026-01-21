@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event'
 import { render, screen } from '~/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ApplicationDialog } from './application-dialog'
 
 // Mock react-router's useFetcher
@@ -169,6 +169,79 @@ describe('ApplicationDialog', () => {
       )
 
       expect(screen.queryByText('Mark Application Sent')).not.toBeInTheDocument()
+    })
+
+    it('closes dialog when fetcher transitions from submitting to idle', () => {
+      // Start with dialog open and fetcher idle
+      const { rerender } = render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      // Transition to submitting (user submitted form)
+      mockFetcherState = 'submitting'
+      rerender(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      // onOpenChange should not be called yet
+      expect(mockOnOpenChange).not.toHaveBeenCalled()
+
+      // Transition to idle (submission complete)
+      mockFetcherState = 'idle'
+      rerender(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      expect(mockOnOpenChange).toHaveBeenCalledWith(false)
+    })
+  })
+
+  describe('submit button state', () => {
+    it('disables submit button and shows Saving... when fetcher is submitting', () => {
+      mockFetcherState = 'submitting'
+
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: /saving/i })
+      expect(button).toBeDisabled()
+    })
+
+    it('enables submit button and shows Confirm when fetcher is idle', () => {
+      mockFetcherState = 'idle'
+
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      const button = screen.getByRole('button', { name: 'Confirm' })
+      expect(button).not.toBeDisabled()
     })
   })
 })

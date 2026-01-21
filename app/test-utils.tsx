@@ -2,7 +2,7 @@ import type { RenderOptions } from '@testing-library/react'
 import { render } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { MemoryRouter } from 'react-router'
-import type { JobOpening, ScoringFormula } from '~/db/schema'
+import type { JobOpening, ScoringFormula, ApplicationStatus } from '~/db/schema'
 
 // Custom render with providers
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
@@ -52,8 +52,13 @@ export function createMockJobOpening(
     dateAdded: new Date('2026-01-15T10:00:00Z'),
     wow: false,
     track: 'engineering',
-    applicationSent: false,
-    applicationSentDate: null,
+    status: 'not_applied',
+    appliedAt: null,
+    interviewingAt: null,
+    offerAt: null,
+    rejectedAt: null,
+    ghostedAt: null,
+    dumpedAt: null,
     salaryMin: 70000,
     salaryMax: 90000,
     salaryCurrency: 'EUR',

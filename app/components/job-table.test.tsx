@@ -1,6 +1,5 @@
-import { render, screen } from '~/test-utils'
-import { createMockJobOpening } from '~/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { createMockJobOpening, render, screen } from '~/test-utils'
 import { JobTable } from './job-table'
 
 // Mock react-router's useFetcher
@@ -11,7 +10,10 @@ vi.mock('react-router', async () => {
     useFetcher: () => ({
       state: 'idle',
       submit: vi.fn(),
-      Form: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+      Form: ({
+        children,
+        ...props
+      }: { children: React.ReactNode } & Record<string, unknown>) => (
         <form {...props}>{children}</form>
       ),
     }),
@@ -31,7 +33,14 @@ describe('JobTable', () => {
   describe('with jobs', () => {
     it('renders job rows', () => {
       const jobs = [
-        { job: createMockJobOpening({ id: '1', title: 'Engineer', company: 'Acme' }), score: 10 },
+        {
+          job: createMockJobOpening({
+            id: '1',
+            title: 'Engineer',
+            company: 'Acme',
+          }),
+          score: 10,
+        },
       ]
       render(<JobTable jobs={jobs} onAppliedClick={mockOnAppliedClick} />)
 
@@ -41,7 +50,10 @@ describe('JobTable', () => {
 
     it('shows wow indicator', () => {
       const jobs = [
-        { job: createMockJobOpening({ title: 'Cool Job', wow: true }), score: 10 },
+        {
+          job: createMockJobOpening({ title: 'Cool Job', wow: true }),
+          score: 10,
+        },
       ]
       render(<JobTable jobs={jobs} onAppliedClick={mockOnAppliedClick} />)
 
@@ -59,21 +71,20 @@ describe('JobTable', () => {
     })
 
     it('renders score', () => {
-      const jobs = [
-        { job: createMockJobOpening(), score: 42 },
-      ]
+      const jobs = [{ job: createMockJobOpening(), score: 42 }]
       render(<JobTable jobs={jobs} onAppliedClick={mockOnAppliedClick} />)
 
       expect(screen.getByText('42')).toBeInTheDocument()
     })
 
     it('renders edit link', () => {
-      const jobs = [
-        { job: createMockJobOpening({ id: 'job-123' }), score: 10 },
-      ]
+      const jobs = [{ job: createMockJobOpening({ id: 'job-123' }), score: 10 }]
       render(<JobTable jobs={jobs} onAppliedClick={mockOnAppliedClick} />)
 
-      expect(screen.getByRole('link', { name: 'Edit' })).toHaveAttribute('href', '/jobs/job-123/edit')
+      expect(screen.getByRole('link', { name: 'Edit' })).toHaveAttribute(
+        'href',
+        '/jobs/job-123/edit',
+      )
     })
   })
 })

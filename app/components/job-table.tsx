@@ -1,5 +1,6 @@
 import Markdown from 'react-markdown'
 import { Link } from 'react-router'
+import { StatusBadge } from '~/components/status-badge'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
 import {
@@ -15,7 +16,6 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { StatusBadge } from '~/components/status-badge'
 import type { RankedJobOpening } from '~/services/scoring.service'
 
 type JobTableProps = {

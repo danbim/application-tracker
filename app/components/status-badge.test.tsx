@@ -1,6 +1,6 @@
-import { render, screen } from '~/test-utils'
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen } from '~/test-utils'
 import { StatusBadge } from './status-badge'
 
 // Create a mock submit function we can track
@@ -14,7 +14,10 @@ vi.mock('react-router', async () => {
     useFetcher: () => ({
       state: 'idle',
       submit: mockSubmit,
-      Form: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+      Form: ({
+        children,
+        ...props
+      }: { children: React.ReactNode } & Record<string, unknown>) => (
         <form {...props}>{children}</form>
       ),
     }),
@@ -26,17 +29,37 @@ let capturedOnValueChange: ((value: string) => void) | null = null
 
 // Mock the Select component to capture onValueChange and allow testing
 vi.mock('~/components/ui/select', () => ({
-  Select: ({ children, onValueChange }: { children: React.ReactNode; value: string; onValueChange: (value: string) => void }) => {
+  Select: ({
+    children,
+    onValueChange,
+  }: {
+    children: React.ReactNode
+    value: string
+    onValueChange: (value: string) => void
+  }) => {
     capturedOnValueChange = onValueChange
     return <div data-testid="select">{children}</div>
   },
-  SelectContent: ({ children }: { children: React.ReactNode }) => <div data-testid="select-content">{children}</div>,
-  SelectItem: ({ children, value }: { children: React.ReactNode; value: string }) => (
-    <button data-testid={`select-item-${value}`} onClick={() => capturedOnValueChange?.(value)}>
+  SelectContent: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="select-content">{children}</div>
+  ),
+  SelectItem: ({
+    children,
+    value,
+  }: {
+    children: React.ReactNode
+    value: string
+  }) => (
+    <button
+      data-testid={`select-item-${value}`}
+      onClick={() => capturedOnValueChange?.(value)}
+    >
       {children}
     </button>
   ),
-  SelectTrigger: ({ children }: { children: React.ReactNode }) => <div data-testid="select-trigger">{children}</div>,
+  SelectTrigger: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="select-trigger">{children}</div>
+  ),
 }))
 
 describe('StatusBadge', () => {
@@ -52,7 +75,13 @@ describe('StatusBadge', () => {
   })
 
   it('renders applied status with date', () => {
-    render(<StatusBadge jobId="123" status="applied" appliedAt={new Date('2026-01-15')} />)
+    render(
+      <StatusBadge
+        jobId="123"
+        status="applied"
+        appliedAt={new Date('2026-01-15')}
+      />,
+    )
     const trigger = screen.getByTestId('select-trigger')
     expect(trigger).toHaveTextContent(/Applied/)
     expect(trigger).toHaveTextContent(/1\/15\/2026/)
@@ -91,7 +120,13 @@ describe('StatusBadge', () => {
   it('calls onAppliedClick when applied is selected', async () => {
     const user = userEvent.setup()
     const onAppliedClick = vi.fn()
-    render(<StatusBadge jobId="123" status="not_applied" onAppliedClick={onAppliedClick} />)
+    render(
+      <StatusBadge
+        jobId="123"
+        status="not_applied"
+        onAppliedClick={onAppliedClick}
+      />,
+    )
 
     // Click the 'applied' option directly (our mock captures onValueChange)
     const appliedOption = screen.getByTestId('select-item-applied')
@@ -111,7 +146,7 @@ describe('StatusBadge', () => {
 
     expect(mockSubmit).toHaveBeenCalledWith(
       { intent: 'updateStatus', jobId: '123', status: 'interviewing' },
-      { method: 'post', action: '/?index' }
+      { method: 'post', action: '/?index' },
     )
   })
 })

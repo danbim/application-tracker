@@ -29,7 +29,8 @@ export const applicationStatusEnum = pgEnum('application_status', [
   'dumped',
 ])
 
-export type ApplicationStatus = (typeof applicationStatusEnum.enumValues)[number]
+export type ApplicationStatus =
+  (typeof applicationStatusEnum.enumValues)[number]
 
 export const ACTIVE_STATUSES: ApplicationStatus[] = [
   'not_applied',

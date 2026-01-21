@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { action } from './jobs.new'
 
 // Mock the repository
@@ -12,7 +12,9 @@ import { jobOpeningRepository } from '~/services/index.server'
 
 const mockJobRepo = vi.mocked(jobOpeningRepository)
 
-function createFormDataRequest(data: Record<string, string | string[]>): Request {
+function createFormDataRequest(
+  data: Record<string, string | string[]>,
+): Request {
   const formData = new FormData()
   for (const [key, value] of Object.entries(data)) {
     if (Array.isArray(value)) {
@@ -68,7 +70,7 @@ describe('jobs.new route', () => {
           title: 'Software Engineer',
           company: 'Acme Corp',
           description: 'Great job opportunity',
-        })
+        }),
       )
       expect(response).toBeInstanceOf(Response)
       expect((response as Response).status).toBe(302)
@@ -106,7 +108,7 @@ describe('jobs.new route', () => {
       expect(mockJobRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           wow: true,
-        })
+        }),
       )
     })
 
@@ -125,7 +127,7 @@ describe('jobs.new route', () => {
       expect(mockJobRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({
           wow: false,
-        })
+        }),
       )
     })
 
@@ -154,7 +156,7 @@ describe('jobs.new route', () => {
           track: null,
           salaryMin: null,
           salaryMax: null,
-        })
+        }),
       )
     })
 
@@ -172,7 +174,7 @@ describe('jobs.new route', () => {
           ratingImpact: 1,
           ratingCompensation: 0,
           ratingRole: -1,
-        })
+        }),
       )
     })
   })

@@ -1,7 +1,7 @@
-import { render, screen } from '~/test-utils'
 import { describe, expect, it } from 'vitest'
-import { StatusTabs } from './status-tabs'
 import type { ApplicationStatus } from '~/db/schema'
+import { render, screen } from '~/test-utils'
+import { StatusTabs } from './status-tabs'
 
 describe('StatusTabs', () => {
   const mockCounts: Record<ApplicationStatus, number> = {
@@ -18,9 +18,13 @@ describe('StatusTabs', () => {
     render(<StatusTabs selectedStatus="active" counts={mockCounts} />)
 
     expect(screen.getByRole('tab', { name: /^Active/ })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: /^Not Applied/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /^Not Applied/ }),
+    ).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /^Applied/ })).toBeInTheDocument()
-    expect(screen.getByRole('tab', { name: /^Interviewing/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('tab', { name: /^Interviewing/ }),
+    ).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /^Offer/ })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /^Rejected/ })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: /^Ghosted/ })).toBeInTheDocument()

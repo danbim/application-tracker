@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockJobOpening } from '~/test-utils'
-import { loader, action } from './jobs.$id.edit'
+import { action, loader } from './jobs.$id.edit'
 
 // Mock the repository
 vi.mock('~/services/index.server', () => ({
@@ -15,7 +15,9 @@ import { jobOpeningRepository } from '~/services/index.server'
 
 const mockJobRepo = vi.mocked(jobOpeningRepository)
 
-function createFormDataRequest(data: Record<string, string | string[]>): Request {
+function createFormDataRequest(
+  data: Record<string, string | string[]>,
+): Request {
   const formData = new FormData()
   for (const [key, value] of Object.entries(data)) {
     if (Array.isArray(value)) {
@@ -79,7 +81,7 @@ describe('jobs.$id.edit route', () => {
           request: new Request('http://localhost/jobs/nonexistent/edit'),
           params: { id: 'nonexistent' },
           context: {},
-        })
+        }),
       ).rejects.toThrow()
 
       try {
@@ -100,7 +102,7 @@ describe('jobs.$id.edit route', () => {
           request: new Request('http://localhost/jobs//edit'),
           params: {},
           context: {},
-        })
+        }),
       ).rejects.toThrow()
 
       try {
@@ -132,7 +134,7 @@ describe('jobs.$id.edit route', () => {
           title: 'Updated Engineer',
           company: 'New Corp',
           description: 'Updated description',
-        })
+        }),
       )
       expect(response).toBeInstanceOf(Response)
       expect((response as Response).status).toBe(302)
@@ -178,7 +180,7 @@ describe('jobs.$id.edit route', () => {
           request: createFormDataRequest(validJobData),
           params: {},
           context: {},
-        })
+        }),
       ).rejects.toThrow()
 
       try {
@@ -199,7 +201,7 @@ describe('jobs.$id.edit route', () => {
           request: createFormDataRequest({ intent: 'delete' }),
           params: {},
           context: {},
-        })
+        }),
       ).rejects.toThrow()
     })
 
@@ -219,7 +221,7 @@ describe('jobs.$id.edit route', () => {
         'job-123',
         expect.objectContaining({
           wow: true,
-        })
+        }),
       )
     })
 
@@ -243,7 +245,7 @@ describe('jobs.$id.edit route', () => {
           jobLocation: null,
           country: null,
           salaryMin: null,
-        })
+        }),
       )
     })
   })

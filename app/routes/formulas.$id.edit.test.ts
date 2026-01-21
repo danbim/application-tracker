@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockScoringFormula } from '~/test-utils'
-import { loader, action } from './formulas.$id.edit'
+import { action, loader } from './formulas.$id.edit'
 
 // Mock the repository
 vi.mock('~/services/index.server', () => ({
@@ -50,7 +50,10 @@ describe('formulas.$id.edit route', () => {
 
   describe('loader', () => {
     it('returns formula when found', async () => {
-      const mockFormula = createMockScoringFormula({ id: 'formula-123', name: 'Test Formula' })
+      const mockFormula = createMockScoringFormula({
+        id: 'formula-123',
+        name: 'Test Formula',
+      })
       mockFormulaRepo.findById.mockResolvedValue(mockFormula)
 
       const result = await loader({
@@ -71,7 +74,7 @@ describe('formulas.$id.edit route', () => {
           request: new Request('http://localhost/formulas/nonexistent/edit'),
           params: { id: 'nonexistent' },
           context: {},
-        })
+        }),
       ).rejects.toThrow()
 
       try {
@@ -92,7 +95,7 @@ describe('formulas.$id.edit route', () => {
           request: new Request('http://localhost/formulas//edit'),
           params: {},
           context: {},
-        })
+        }),
       ).rejects.toThrow()
 
       try {
@@ -126,7 +129,7 @@ describe('formulas.$id.edit route', () => {
             impact: 5,
             compensation: 4,
           }),
-        })
+        }),
       )
       expect(response).toBeInstanceOf(Response)
       expect((response as Response).status).toBe(302)
@@ -170,7 +173,7 @@ describe('formulas.$id.edit route', () => {
           request: createFormDataRequest(validFormulaData),
           params: {},
           context: {},
-        })
+        }),
       ).rejects.toThrow()
 
       try {
@@ -191,7 +194,7 @@ describe('formulas.$id.edit route', () => {
           request: createFormDataRequest({ intent: 'delete' }),
           params: {},
           context: {},
-        })
+        }),
       ).rejects.toThrow()
     })
 
@@ -215,7 +218,7 @@ describe('formulas.$id.edit route', () => {
             impact: 10,
             stress: -10,
           }),
-        })
+        }),
       )
     })
   })

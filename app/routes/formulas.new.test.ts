@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { action } from './formulas.new'
 
 // Mock the repository
@@ -64,7 +64,7 @@ describe('formulas.new route', () => {
             stress: -2,
             wowBoost: 10,
           }),
-        })
+        }),
       )
       expect(response).toBeInstanceOf(Response)
       expect((response as Response).status).toBe(302)
@@ -131,7 +131,7 @@ describe('formulas.new route', () => {
             stress: -5,
             companySize: -3,
           }),
-        })
+        }),
       )
     })
 
@@ -152,7 +152,7 @@ describe('formulas.new route', () => {
           weights: expect.objectContaining({
             industry: 0,
           }),
-        })
+        }),
       )
     })
   })

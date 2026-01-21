@@ -1,6 +1,5 @@
-import { render, screen } from '~/test-utils'
-import { createMockScoringFormula } from '~/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { createMockScoringFormula, render, screen } from '~/test-utils'
 import { FormulaForm } from './formula-form'
 
 // Mock react-router Form
@@ -8,7 +7,10 @@ vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router')
   return {
     ...actual,
-    Form: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+    Form: ({
+      children,
+      ...props
+    }: { children: React.ReactNode } & Record<string, unknown>) => (
       <form {...props}>{children}</form>
     ),
   }
@@ -23,7 +25,9 @@ describe('FormulaForm', () => {
 
     it('shows placeholder text for name input', () => {
       render(<FormulaForm />)
-      expect(screen.getByPlaceholderText(/Professional Growth/)).toBeInTheDocument()
+      expect(
+        screen.getByPlaceholderText(/Professional Growth/),
+      ).toBeInTheDocument()
     })
   })
 
@@ -33,9 +37,13 @@ describe('FormulaForm', () => {
 
       expect(screen.getByLabelText('Positive Impact')).toBeInTheDocument()
       expect(screen.getByLabelText('Compensation')).toBeInTheDocument()
-      expect(screen.getByLabelText('Role / Level of Responsibility')).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Role / Level of Responsibility'),
+      ).toBeInTheDocument()
       expect(screen.getByLabelText('Technologies')).toBeInTheDocument()
-      expect(screen.getByLabelText('Remote / Hybrid / Office')).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Remote / Hybrid / Office'),
+      ).toBeInTheDocument()
       expect(screen.getByLabelText('Industry')).toBeInTheDocument()
       expect(screen.getByLabelText('Engineering Culture')).toBeInTheDocument()
       expect(screen.getByLabelText('Growth Potential')).toBeInTheDocument()
@@ -70,20 +78,26 @@ describe('FormulaForm', () => {
     it('shows help text about negative weights', () => {
       render(<FormulaForm />)
 
-      expect(screen.getByText(/negative weights decrease it/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/negative weights decrease it/i),
+      ).toBeInTheDocument()
     })
   })
 
   describe('form buttons', () => {
     it('renders Create button when no formula provided', () => {
       render(<FormulaForm />)
-      expect(screen.getByRole('button', { name: /Create Formula/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Create Formula/ }),
+      ).toBeInTheDocument()
     })
 
     it('renders Update button when formula provided', () => {
       const formula = createMockScoringFormula()
       render(<FormulaForm formula={formula} />)
-      expect(screen.getByRole('button', { name: /Update Formula/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Update Formula/ }),
+      ).toBeInTheDocument()
     })
 
     it('renders Cancel button', () => {
@@ -97,7 +111,9 @@ describe('FormulaForm', () => {
       const formula = createMockScoringFormula({ name: 'My Custom Formula' })
       render(<FormulaForm formula={formula} />)
 
-      expect(screen.getByLabelText(/Formula Name/)).toHaveValue('My Custom Formula')
+      expect(screen.getByLabelText(/Formula Name/)).toHaveValue(
+        'My Custom Formula',
+      )
     })
 
     it('pre-fills weights from formula', () => {
@@ -138,9 +154,15 @@ describe('FormulaForm', () => {
     it('uses nested names for weights (weights.key)', () => {
       const { container } = render(<FormulaForm />)
 
-      expect(container.querySelector('input[name="weights.impact"]')).toBeInTheDocument()
-      expect(container.querySelector('input[name="weights.compensation"]')).toBeInTheDocument()
-      expect(container.querySelector('input[name="weights.wowBoost"]')).toBeInTheDocument()
+      expect(
+        container.querySelector('input[name="weights.impact"]'),
+      ).toBeInTheDocument()
+      expect(
+        container.querySelector('input[name="weights.compensation"]'),
+      ).toBeInTheDocument()
+      expect(
+        container.querySelector('input[name="weights.wowBoost"]'),
+      ).toBeInTheDocument()
     })
   })
 })

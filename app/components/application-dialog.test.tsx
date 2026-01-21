@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '~/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen } from '~/test-utils'
 import { ApplicationDialog } from './application-dialog'
 
 // Mock react-router's useFetcher
@@ -14,7 +14,10 @@ vi.mock('react-router', async () => {
     useFetcher: () => ({
       state: mockFetcherState,
       submit: mockSubmit,
-      Form: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+      Form: ({
+        children,
+        ...props
+      }: { children: React.ReactNode } & Record<string, unknown>) => (
         <form {...props}>{children}</form>
       ),
     }),
@@ -38,7 +41,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Software Engineer"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       expect(screen.getByText('Mark Application Sent')).toBeInTheDocument()
@@ -51,7 +54,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Senior Developer"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       expect(screen.getByText(/Senior Developer/)).toBeInTheDocument()
@@ -64,7 +67,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       const dateInput = screen.getByLabelText('Application Date')
@@ -83,11 +86,13 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Confirm' })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: 'Confirm' }),
+      ).toBeInTheDocument()
     })
   })
 
@@ -99,11 +104,13 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       // Dialog content is rendered in a portal, so we search the whole document
-      const intentInput = document.querySelector('input[name="intent"][value="updateStatus"]')
+      const intentInput = document.querySelector(
+        'input[name="intent"][value="updateStatus"]',
+      )
       expect(intentInput).toBeInTheDocument()
     })
 
@@ -114,11 +121,13 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       // Dialog content is rendered in a portal, so we search the whole document
-      const statusInput = document.querySelector('input[name="status"][value="applied"]')
+      const statusInput = document.querySelector(
+        'input[name="status"][value="applied"]',
+      )
       expect(statusInput).toBeInTheDocument()
     })
 
@@ -129,11 +138,13 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       // Dialog content is rendered in a portal, so we search the whole document
-      const jobIdInput = document.querySelector('input[name="jobId"][value="job-456"]')
+      const jobIdInput = document.querySelector(
+        'input[name="jobId"][value="job-456"]',
+      )
       expect(jobIdInput).toBeInTheDocument()
     })
   })
@@ -148,7 +159,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       await user.click(screen.getByRole('button', { name: 'Cancel' }))
@@ -165,10 +176,12 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={false}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
-      expect(screen.queryByText('Mark Application Sent')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Mark Application Sent'),
+      ).not.toBeInTheDocument()
     })
 
     it('closes dialog when fetcher transitions from submitting to idle', () => {
@@ -179,7 +192,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       // Transition to submitting (user submitted form)
@@ -190,7 +203,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       // onOpenChange should not be called yet
@@ -204,7 +217,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       expect(mockOnOpenChange).toHaveBeenCalledWith(false)
@@ -221,7 +234,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       const button = screen.getByRole('button', { name: /saving/i })
@@ -237,7 +250,7 @@ describe('ApplicationDialog', () => {
           jobTitle="Test Job"
           open={true}
           onOpenChange={mockOnOpenChange}
-        />
+        />,
       )
 
       const button = screen.getByRole('button', { name: 'Confirm' })

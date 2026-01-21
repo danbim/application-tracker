@@ -2,7 +2,7 @@ import type { RenderOptions } from '@testing-library/react'
 import { render } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { MemoryRouter } from 'react-router'
-import type { JobOpening, ScoringFormula, ApplicationStatus } from '~/db/schema'
+import type { ApplicationStatus, JobOpening, ScoringFormula } from '~/db/schema'
 
 // Custom render with providers
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
@@ -124,7 +124,10 @@ export function createMockFetcher(overrides: Record<string, unknown> = {}) {
     formMethod: undefined,
     submit: vi.fn(),
     load: vi.fn(),
-    Form: ({ children, ...props }: { children: ReactNode } & Record<string, unknown>) => (
+    Form: ({
+      children,
+      ...props
+    }: { children: ReactNode } & Record<string, unknown>) => (
       <form {...props}>{children}</form>
     ),
     ...overrides,

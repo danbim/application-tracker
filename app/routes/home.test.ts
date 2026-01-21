@@ -1,6 +1,6 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockJobOpening, createMockScoringFormula } from '~/test-utils'
-import { loader, action } from './home'
+import { action, loader } from './home'
 
 // Mock the services
 vi.mock('~/services/index.server', () => ({
@@ -14,7 +14,7 @@ vi.mock('~/services/index.server', () => ({
   },
   scoringService: {
     rankJobOpenings: vi.fn((jobs, _formula) =>
-      jobs.map((job: unknown) => ({ job, score: 10 }))
+      jobs.map((job: unknown) => ({ job, score: 10 })),
     ),
   },
 }))
@@ -138,10 +138,8 @@ describe('home route', () => {
 
       // Only DE jobs should be passed to rankJobOpenings
       expect(mockScoringService.rankJobOpenings).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ country: 'DE' }),
-        ]),
-        expect.anything()
+        expect.arrayContaining([expect.objectContaining({ country: 'DE' })]),
+        expect.anything(),
       )
       expect(result.selectedCountry).toBe('DE')
     })
@@ -338,7 +336,7 @@ describe('home route', () => {
       expect(mockJobRepo.updateStatus).toHaveBeenCalledWith(
         'job-123',
         'applied',
-        '2026-01-15'
+        '2026-01-15',
       )
       expect(result).toEqual({ success: true })
     })
@@ -359,7 +357,7 @@ describe('home route', () => {
       expect(mockJobRepo.updateStatus).toHaveBeenCalledWith(
         'job-456',
         'interviewing',
-        null
+        null,
       )
       expect(result).toEqual({ success: true })
     })

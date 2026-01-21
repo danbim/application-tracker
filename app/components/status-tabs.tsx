@@ -22,9 +22,17 @@ const TABS: TabConfig[] = [
     getCount: (counts) =>
       ACTIVE_STATUSES.reduce((sum, s) => sum + counts[s], 0),
   },
-  { value: 'not_applied', label: 'Not Applied', getCount: (c) => c.not_applied },
+  {
+    value: 'not_applied',
+    label: 'Not Applied',
+    getCount: (c) => c.not_applied,
+  },
   { value: 'applied', label: 'Applied', getCount: (c) => c.applied },
-  { value: 'interviewing', label: 'Interviewing', getCount: (c) => c.interviewing },
+  {
+    value: 'interviewing',
+    label: 'Interviewing',
+    getCount: (c) => c.interviewing,
+  },
   { value: 'offer', label: 'Offer', getCount: (c) => c.offer },
   { value: 'rejected', label: 'Rejected', getCount: (c) => c.rejected },
   { value: 'ghosted', label: 'Ghosted', getCount: (c) => c.ghosted },

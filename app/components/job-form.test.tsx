@@ -1,7 +1,6 @@
 import userEvent from '@testing-library/user-event'
-import { render, screen } from '~/test-utils'
-import { createMockJobOpening } from '~/test-utils'
 import { describe, expect, it, vi } from 'vitest'
+import { createMockJobOpening, render, screen } from '~/test-utils'
 import { JobForm } from './job-form'
 
 // Mock react-router Form
@@ -9,7 +8,10 @@ vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router')
   return {
     ...actual,
-    Form: ({ children, ...props }: { children: React.ReactNode } & Record<string, unknown>) => (
+    Form: ({
+      children,
+      ...props
+    }: { children: React.ReactNode } & Record<string, unknown>) => (
       <form {...props}>{children}</form>
     ),
   }
@@ -17,7 +19,9 @@ vi.mock('react-router', async () => {
 
 // Mock react-markdown
 vi.mock('react-markdown', () => ({
-  default: ({ children }: { children: string }) => <div data-testid="markdown-preview">{children}</div>,
+  default: ({ children }: { children: string }) => (
+    <div data-testid="markdown-preview">{children}</div>
+  ),
 }))
 
 describe('JobForm', () => {
@@ -129,8 +133,12 @@ describe('JobForm', () => {
 
       expect(screen.getByText('Positive Impact')).toBeInTheDocument()
       // "Compensation" appears twice (section header + rating), so use getAllByText
-      expect(screen.getAllByText('Compensation').length).toBeGreaterThanOrEqual(1)
-      expect(screen.getByText('Role / Level of Responsibility')).toBeInTheDocument()
+      expect(screen.getAllByText('Compensation').length).toBeGreaterThanOrEqual(
+        1,
+      )
+      expect(
+        screen.getByText('Role / Level of Responsibility'),
+      ).toBeInTheDocument()
       expect(screen.getByText('Technologies')).toBeInTheDocument()
       expect(screen.getByText('Remote / Hybrid / Office')).toBeInTheDocument()
       expect(screen.getByText('Industry')).toBeInTheDocument()
@@ -146,13 +154,17 @@ describe('JobForm', () => {
   describe('form buttons', () => {
     it('renders Create button when no job provided', () => {
       render(<JobForm />)
-      expect(screen.getByRole('button', { name: /Create Job Opening/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Create Job Opening/ }),
+      ).toBeInTheDocument()
     })
 
     it('renders Update button when job provided', () => {
       const job = createMockJobOpening()
       render(<JobForm job={job} />)
-      expect(screen.getByRole('button', { name: /Update Job Opening/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Update Job Opening/ }),
+      ).toBeInTheDocument()
     })
 
     it('renders Cancel button', () => {
@@ -180,7 +192,9 @@ describe('JobForm', () => {
       const job = createMockJobOpening({ description: 'Great opportunity' })
       render(<JobForm job={job} />)
 
-      expect(screen.getByLabelText(/Description/)).toHaveValue('Great opportunity')
+      expect(screen.getByLabelText(/Description/)).toHaveValue(
+        'Great opportunity',
+      )
     })
 
     it('pre-fills location from job', () => {
@@ -208,7 +222,9 @@ describe('JobForm', () => {
   describe('markdown preview', () => {
     it('shows preview toggle button', () => {
       render(<JobForm />)
-      expect(screen.getByRole('button', { name: /Show Preview/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Show Preview/ }),
+      ).toBeInTheDocument()
     })
 
     it('toggles preview when button clicked', async () => {
@@ -220,7 +236,9 @@ describe('JobForm', () => {
 
       // Click to show preview
       await user.click(screen.getByRole('button', { name: /Show Preview/ }))
-      expect(screen.getByRole('button', { name: /Hide Preview/ })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Hide Preview/ }),
+      ).toBeInTheDocument()
     })
 
     it('shows markdown preview when preview enabled', async () => {
@@ -255,7 +273,9 @@ describe('JobForm', () => {
     it('includes hidden input for wow checkbox with false value', () => {
       const { container } = render(<JobForm />)
 
-      const hiddenWow = container.querySelector('input[type="hidden"][name="wow"][value="false"]')
+      const hiddenWow = container.querySelector(
+        'input[type="hidden"][name="wow"][value="false"]',
+      )
       expect(hiddenWow).toBeInTheDocument()
     })
   })

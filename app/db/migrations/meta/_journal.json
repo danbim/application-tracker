@@ -43,6 +43,13 @@
       "when": 1768857583190,
       "tag": "0005_reflective_mulholland_black",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1737500000000,
+      "tag": "0006_add_application_status",
+      "breakpoints": true
     }
   ]
 }

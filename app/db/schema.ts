@@ -19,6 +19,25 @@ export const workLocationEnum = pgEnum('work_location', [
 
 export const jobTrackEnum = pgEnum('job_track', ['engineering', 'management'])
 
+export const applicationStatusEnum = pgEnum('application_status', [
+  'not_applied',
+  'applied',
+  'interviewing',
+  'offer',
+  'rejected',
+  'ghosted',
+  'dumped',
+])
+
+export type ApplicationStatus = (typeof applicationStatusEnum.enumValues)[number]
+
+export const ACTIVE_STATUSES: ApplicationStatus[] = [
+  'not_applied',
+  'applied',
+  'interviewing',
+  'offer',
+]
+
 export const scoringFormulas = pgTable('scoring_formulas', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull(),
@@ -53,8 +72,13 @@ export const jobOpenings = pgTable('job_openings', {
   dateAdded: timestamp('date_added').defaultNow().notNull(),
   wow: boolean('wow').default(false).notNull(),
   track: jobTrackEnum('track'),
-  applicationSent: boolean('application_sent').default(false).notNull(),
-  applicationSentDate: date('application_sent_date'),
+  status: applicationStatusEnum('status').default('not_applied').notNull(),
+  appliedAt: timestamp('applied_at'),
+  interviewingAt: timestamp('interviewing_at'),
+  offerAt: timestamp('offer_at'),
+  rejectedAt: timestamp('rejected_at'),
+  ghostedAt: timestamp('ghosted_at'),
+  dumpedAt: timestamp('dumped_at'),
 
   // Compensation
   salaryMin: integer('salary_min'),

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, Link, useLoaderData } from 'react-router'
+import { Link, useLoaderData, useSearchParams } from 'react-router'
 import { ApplicationDialog } from '~/components/application-dialog'
 import { JobTable } from '~/components/job-table'
 import { StatusTabs } from '~/components/status-tabs'
@@ -162,6 +162,7 @@ export default function Home() {
     statusCounts,
   } = useLoaderData<typeof loader>()
 
+  const [searchParams, setSearchParams] = useSearchParams()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
 
@@ -172,6 +173,26 @@ export default function Home() {
   const handleAppliedClick = (jobId: string) => {
     setSelectedJobId(jobId)
     setDialogOpen(true)
+  }
+
+  const updateFilter = (key: string, value: string) => {
+    const newParams = new URLSearchParams(searchParams)
+    if (value === '' || value === 'all') {
+      newParams.delete(key)
+    } else {
+      newParams.set(key, value)
+    }
+    setSearchParams(newParams)
+  }
+
+  const toggleWow = () => {
+    const newParams = new URLSearchParams(searchParams)
+    if (wowFilter) {
+      newParams.delete('wow')
+    } else {
+      newParams.set('wow', 'true')
+    }
+    setSearchParams(newParams)
   }
 
   return (
@@ -204,43 +225,38 @@ export default function Home() {
         <StatusTabs selectedStatus={selectedStatus} counts={statusCounts} />
       </div>
 
-      <div className="flex gap-4 mb-6 flex-wrap">
-        <Form method="get" className="flex gap-2 items-center">
-          <input type="hidden" name="status" value={selectedStatus} />
-          <input type="hidden" name="sort" value={sortBy} />
-          <input type="hidden" name="country" value={selectedCountry} />
-          <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
-          <input type="hidden" name="track" value={selectedTrack} />
-          <label htmlFor="formula-select" className="text-sm font-medium">
-            Formula:
-          </label>
-          <Select name="formula" defaultValue={selectedFormulaId || undefined}>
-            <SelectTrigger id="formula-select" className="w-[200px]">
-              <SelectValue placeholder="Select formula" />
-            </SelectTrigger>
-            <SelectContent>
-              {formulas.map((formula) => (
-                <SelectItem key={formula.id} value={formula.id}>
-                  {formula.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button type="submit" variant="secondary" size="sm">
-            Apply
-          </Button>
-        </Form>
+      <div className="flex gap-4 mb-6 flex-wrap items-center">
+        {formulas.length > 0 && (
+          <div className="flex gap-2 items-center">
+            <label htmlFor="formula-select" className="text-sm font-medium">
+              Formula:
+            </label>
+            <Select
+              value={selectedFormulaId || undefined}
+              onValueChange={(value) => updateFilter('formula', value)}
+            >
+              <SelectTrigger id="formula-select" className="w-[200px]">
+                <SelectValue placeholder="Select formula" />
+              </SelectTrigger>
+              <SelectContent>
+                {formulas.map((formula) => (
+                  <SelectItem key={formula.id} value={formula.id}>
+                    {formula.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-        <Form method="get" className="flex gap-2 items-center">
-          <input type="hidden" name="status" value={selectedStatus} />
-          <input type="hidden" name="formula" value={selectedFormulaId || ''} />
-          <input type="hidden" name="country" value={selectedCountry} />
-          <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
-          <input type="hidden" name="track" value={selectedTrack} />
+        <div className="flex gap-2 items-center">
           <label htmlFor="sort-select" className="text-sm font-medium">
-            Sort by:
+            Sort:
           </label>
-          <Select name="sort" defaultValue={sortBy}>
+          <Select
+            value={sortBy}
+            onValueChange={(value) => updateFilter('sort', value)}
+          >
             <SelectTrigger id="sort-select" className="w-[150px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -249,26 +265,17 @@ export default function Home() {
               <SelectItem value="date">Date Added</SelectItem>
             </SelectContent>
           </Select>
-          <Button type="submit" variant="secondary" size="sm">
-            Sort
-          </Button>
-        </Form>
+        </div>
 
         {availableCountries.length > 0 && (
-          <Form method="get" className="flex gap-2 items-center">
-            <input type="hidden" name="status" value={selectedStatus} />
-            <input
-              type="hidden"
-              name="formula"
-              value={selectedFormulaId || ''}
-            />
-            <input type="hidden" name="sort" value={sortBy} />
-            <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
-            <input type="hidden" name="track" value={selectedTrack} />
+          <div className="flex gap-2 items-center">
             <label htmlFor="country-select" className="text-sm font-medium">
               Country:
             </label>
-            <Select name="country" defaultValue={selectedCountry}>
+            <Select
+              value={selectedCountry}
+              onValueChange={(value) => updateFilter('country', value)}
+            >
               <SelectTrigger id="country-select" className="w-[180px]">
                 <SelectValue placeholder="Filter by country" />
               </SelectTrigger>
@@ -281,44 +288,17 @@ export default function Home() {
                 ))}
               </SelectContent>
             </Select>
-            <Button type="submit" variant="secondary" size="sm">
-              Filter
-            </Button>
-          </Form>
+          </div>
         )}
 
-        {hasWowJobs && (
-          <Form method="get" className="flex gap-2 items-center">
-            <input type="hidden" name="status" value={selectedStatus} />
-            <input
-              type="hidden"
-              name="formula"
-              value={selectedFormulaId || ''}
-            />
-            <input type="hidden" name="sort" value={sortBy} />
-            <input type="hidden" name="country" value={selectedCountry} />
-            <input type="hidden" name="wow" value={wowFilter ? '' : 'true'} />
-            <input type="hidden" name="track" value={selectedTrack} />
-            <Button
-              type="submit"
-              variant={wowFilter ? 'default' : 'outline'}
-              size="sm"
-            >
-              {wowFilter ? '★ Wow Only' : '☆ Show Wow'}
-            </Button>
-          </Form>
-        )}
-
-        <Form method="get" className="flex gap-2 items-center">
-          <input type="hidden" name="status" value={selectedStatus} />
-          <input type="hidden" name="formula" value={selectedFormulaId || ''} />
-          <input type="hidden" name="sort" value={sortBy} />
-          <input type="hidden" name="country" value={selectedCountry} />
-          <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
+        <div className="flex gap-2 items-center">
           <label htmlFor="track-select" className="text-sm font-medium">
             Track:
           </label>
-          <Select name="track" defaultValue={selectedTrack}>
+          <Select
+            value={selectedTrack}
+            onValueChange={(value) => updateFilter('track', value)}
+          >
             <SelectTrigger id="track-select" className="w-[150px]">
               <SelectValue placeholder="Filter by track" />
             </SelectTrigger>
@@ -328,10 +308,18 @@ export default function Home() {
               <SelectItem value="management">Management</SelectItem>
             </SelectContent>
           </Select>
-          <Button type="submit" variant="secondary" size="sm">
-            Filter
+        </div>
+
+        {hasWowJobs && (
+          <Button
+            type="button"
+            variant={wowFilter ? 'default' : 'outline'}
+            size="sm"
+            onClick={toggleWow}
+          >
+            {wowFilter ? '★ Wow Only' : '☆ Show Wow'}
           </Button>
-        </Form>
+        )}
       </div>
 
       <JobTable jobs={jobs} onAppliedClick={handleAppliedClick} />

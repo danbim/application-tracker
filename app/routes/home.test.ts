@@ -6,7 +6,8 @@ import { loader, action } from './home'
 vi.mock('~/services/index.server', () => ({
   jobOpeningRepository: {
     findAll: vi.fn(),
-    updateApplicationStatus: vi.fn(),
+    countByStatus: vi.fn(),
+    updateStatus: vi.fn(),
   },
   scoringFormulaRepository: {
     findAll: vi.fn(),
@@ -44,9 +45,20 @@ function createFormDataRequest(data: Record<string, string>): Request {
   })
 }
 
+const defaultStatusCounts = {
+  not_applied: 0,
+  applied: 0,
+  interviewing: 0,
+  offer: 0,
+  rejected: 0,
+  ghosted: 0,
+  dumped: 0,
+}
+
 describe('home route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockJobRepo.countByStatus.mockResolvedValue(defaultStatusCounts)
   })
 
   describe('loader', () => {
@@ -237,45 +249,116 @@ describe('home route', () => {
 
       expect(result.sortBy).toBe('date')
     })
+
+    it('filters to active statuses by default', async () => {
+      const mockJobs = [
+        createMockJobOpening({ id: '1', status: 'not_applied' }),
+        createMockJobOpening({ id: '2', status: 'applied' }),
+        createMockJobOpening({ id: '3', status: 'interviewing' }),
+        createMockJobOpening({ id: '4', status: 'offer' }),
+        createMockJobOpening({ id: '5', status: 'rejected' }),
+        createMockJobOpening({ id: '6', status: 'ghosted' }),
+      ]
+
+      mockJobRepo.findAll.mockResolvedValue(mockJobs)
+      mockFormulaRepo.findAll.mockResolvedValue([])
+
+      const result = await loader({
+        request: createRequest('http://localhost/'),
+        params: {},
+        context: {},
+      })
+
+      // Should only include active statuses (not_applied, applied, interviewing, offer)
+      expect(result.jobs).toHaveLength(4)
+      expect(result.selectedStatus).toBe('active')
+    })
+
+    it('filters to specific status when status param provided', async () => {
+      const mockJobs = [
+        createMockJobOpening({ id: '1', status: 'not_applied' }),
+        createMockJobOpening({ id: '2', status: 'applied' }),
+        createMockJobOpening({ id: '3', status: 'rejected' }),
+      ]
+
+      mockJobRepo.findAll.mockResolvedValue(mockJobs)
+      mockFormulaRepo.findAll.mockResolvedValue([])
+
+      const result = await loader({
+        request: createRequest('http://localhost/?status=rejected'),
+        params: {},
+        context: {},
+      })
+
+      expect(result.jobs).toHaveLength(1)
+      expect(result.jobs[0].job.status).toBe('rejected')
+      expect(result.selectedStatus).toBe('rejected')
+    })
+
+    it('returns statusCounts from countByStatus', async () => {
+      const statusCounts = {
+        not_applied: 5,
+        applied: 3,
+        interviewing: 2,
+        offer: 1,
+        rejected: 4,
+        ghosted: 2,
+        dumped: 0,
+      }
+
+      mockJobRepo.findAll.mockResolvedValue([])
+      mockFormulaRepo.findAll.mockResolvedValue([])
+      mockJobRepo.countByStatus.mockResolvedValue(statusCounts)
+
+      const result = await loader({
+        request: createRequest('http://localhost/'),
+        params: {},
+        context: {},
+      })
+
+      expect(result.statusCounts).toEqual(statusCounts)
+    })
   })
 
   describe('action', () => {
-    it('marks job as applied with markApplied intent', async () => {
-      mockJobRepo.updateApplicationStatus.mockResolvedValue(undefined)
+    it('updates job status with updateStatus intent', async () => {
+      mockJobRepo.updateStatus.mockResolvedValue(undefined)
 
       const result = await action({
         request: createFormDataRequest({
-          intent: 'markApplied',
+          intent: 'updateStatus',
           jobId: 'job-123',
-          applicationSentDate: '2026-01-15',
+          status: 'applied',
+          date: '2026-01-15',
         }),
         params: {},
         context: {},
       })
 
-      expect(mockJobRepo.updateApplicationStatus).toHaveBeenCalledWith(
+      expect(mockJobRepo.updateStatus).toHaveBeenCalledWith(
         'job-123',
-        true,
+        'applied',
         '2026-01-15'
       )
       expect(result).toEqual({ success: true })
     })
 
-    it('marks job as unapplied with markUnapplied intent', async () => {
-      mockJobRepo.updateApplicationStatus.mockResolvedValue(undefined)
+    it('updates job status without date', async () => {
+      mockJobRepo.updateStatus.mockResolvedValue(undefined)
 
       const result = await action({
         request: createFormDataRequest({
-          intent: 'markUnapplied',
+          intent: 'updateStatus',
           jobId: 'job-456',
+          status: 'interviewing',
         }),
         params: {},
         context: {},
       })
 
-      expect(mockJobRepo.updateApplicationStatus).toHaveBeenCalledWith(
+      expect(mockJobRepo.updateStatus).toHaveBeenCalledWith(
         'job-456',
-        false,
+        'interviewing',
         null
       )
       expect(result).toEqual({ success: true })

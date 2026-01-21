@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Form, Link, useLoaderData } from 'react-router'
 import { ApplicationDialog } from '~/components/application-dialog'
 import { JobTable } from '~/components/job-table'
+import { StatusTabs } from '~/components/status-tabs'
 import { Button } from '~/components/ui/button'
 import {
   Select,
@@ -10,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
+import { ACTIVE_STATUSES, type ApplicationStatus } from '~/db/schema'
 import {
   jobOpeningRepository,
   scoringFormulaRepository,
@@ -53,10 +55,12 @@ export async function loader({ request }: Route.LoaderArgs) {
   const countryParam = url.searchParams.get('country')
   const wowParam = url.searchParams.get('wow')
   const trackParam = url.searchParams.get('track')
+  const statusParam = url.searchParams.get('status') || 'active'
 
-  const [allJobs, formulas] = await Promise.all([
+  const [allJobs, formulas, statusCounts] = await Promise.all([
     jobOpeningRepository.findAll(),
     scoringFormulaRepository.findAll(),
+    jobOpeningRepository.countByStatus(),
   ])
 
   // Get unique countries from all jobs for the filter dropdown
@@ -67,8 +71,15 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Check if any jobs have wow factor
   const hasWowJobs = allJobs.some((job) => job.wow)
 
-  // Filter jobs by country, wow, and track if specified
+  // Filter jobs by status
   let jobs = allJobs
+  if (statusParam === 'active') {
+    jobs = jobs.filter((job) => ACTIVE_STATUSES.includes(job.status))
+  } else {
+    jobs = jobs.filter((job) => job.status === statusParam)
+  }
+
+  // Filter jobs by country, wow, and track if specified
   if (countryParam && countryParam !== 'all') {
     jobs = jobs.filter((job) => job.country === countryParam)
   }
@@ -114,6 +125,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     hasWowJobs,
     wowFilter: wowParam === 'true',
     selectedTrack: trackParam || 'all',
+    selectedStatus: statusParam,
+    statusCounts,
   }
 }
 
@@ -121,23 +134,12 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData()
   const intent = formData.get('intent')
 
-  if (intent === 'markApplied') {
+  if (intent === 'updateStatus') {
     const jobId = formData.get('jobId') as string
-    const applicationSentDate = formData.get('applicationSentDate') as string
+    const status = formData.get('status') as ApplicationStatus
+    const date = formData.get('date') as string | null
 
-    await jobOpeningRepository.updateApplicationStatus(
-      jobId,
-      true,
-      applicationSentDate,
-    )
-
-    return { success: true }
-  }
-
-  if (intent === 'markUnapplied') {
-    const jobId = formData.get('jobId') as string
-
-    await jobOpeningRepository.updateApplicationStatus(jobId, false, null)
+    await jobOpeningRepository.updateStatus(jobId, status, date)
 
     return { success: true }
   }
@@ -156,6 +158,8 @@ export default function Home() {
     hasWowJobs,
     wowFilter,
     selectedTrack,
+    selectedStatus,
+    statusCounts,
   } = useLoaderData<typeof loader>()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -165,7 +169,7 @@ export default function Home() {
     ? jobs.find((j) => j.job.id === selectedJobId)?.job
     : null
 
-  const handleMarkApplied = (jobId: string) => {
+  const handleAppliedClick = (jobId: string) => {
     setSelectedJobId(jobId)
     setDialogOpen(true)
   }
@@ -196,8 +200,13 @@ export default function Home() {
         </div>
       )}
 
+      <div className="mb-6">
+        <StatusTabs selectedStatus={selectedStatus} counts={statusCounts} />
+      </div>
+
       <div className="flex gap-4 mb-6 flex-wrap">
         <Form method="get" className="flex gap-2 items-center">
+          <input type="hidden" name="status" value={selectedStatus} />
           <input type="hidden" name="sort" value={sortBy} />
           <input type="hidden" name="country" value={selectedCountry} />
           <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
@@ -223,6 +232,7 @@ export default function Home() {
         </Form>
 
         <Form method="get" className="flex gap-2 items-center">
+          <input type="hidden" name="status" value={selectedStatus} />
           <input type="hidden" name="formula" value={selectedFormulaId || ''} />
           <input type="hidden" name="country" value={selectedCountry} />
           <input type="hidden" name="wow" value={wowFilter ? 'true' : ''} />
@@ -246,6 +256,7 @@ export default function Home() {
 
         {availableCountries.length > 0 && (
           <Form method="get" className="flex gap-2 items-center">
+            <input type="hidden" name="status" value={selectedStatus} />
             <input
               type="hidden"
               name="formula"
@@ -278,6 +289,7 @@ export default function Home() {
 
         {hasWowJobs && (
           <Form method="get" className="flex gap-2 items-center">
+            <input type="hidden" name="status" value={selectedStatus} />
             <input
               type="hidden"
               name="formula"
@@ -298,6 +310,7 @@ export default function Home() {
         )}
 
         <Form method="get" className="flex gap-2 items-center">
+          <input type="hidden" name="status" value={selectedStatus} />
           <input type="hidden" name="formula" value={selectedFormulaId || ''} />
           <input type="hidden" name="sort" value={sortBy} />
           <input type="hidden" name="country" value={selectedCountry} />
@@ -321,7 +334,7 @@ export default function Home() {
         </Form>
       </div>
 
-      <JobTable jobs={jobs} onMarkApplied={handleMarkApplied} />
+      <JobTable jobs={jobs} onAppliedClick={handleAppliedClick} />
 
       <ApplicationDialog
         jobId={selectedJobId}

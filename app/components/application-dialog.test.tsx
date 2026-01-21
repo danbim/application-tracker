@@ -92,7 +92,7 @@ describe('ApplicationDialog', () => {
   })
 
   describe('hidden inputs', () => {
-    it('includes hidden input for intent', () => {
+    it('includes hidden input for intent with updateStatus value', () => {
       render(
         <ApplicationDialog
           jobId="job-123"
@@ -103,8 +103,23 @@ describe('ApplicationDialog', () => {
       )
 
       // Dialog content is rendered in a portal, so we search the whole document
-      const intentInput = document.querySelector('input[name="intent"][value="markApplied"]')
+      const intentInput = document.querySelector('input[name="intent"][value="updateStatus"]')
       expect(intentInput).toBeInTheDocument()
+    })
+
+    it('includes hidden input for status with applied value', () => {
+      render(
+        <ApplicationDialog
+          jobId="job-123"
+          jobTitle="Test Job"
+          open={true}
+          onOpenChange={mockOnOpenChange}
+        />
+      )
+
+      // Dialog content is rendered in a portal, so we search the whole document
+      const statusInput = document.querySelector('input[name="status"][value="applied"]')
+      expect(statusInput).toBeInTheDocument()
     })
 
     it('includes hidden input for jobId', () => {

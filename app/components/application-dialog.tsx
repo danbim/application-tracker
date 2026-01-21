@@ -52,7 +52,8 @@ export function ApplicationDialog({
           <DialogTitle>Mark Application Sent</DialogTitle>
         </DialogHeader>
         <fetcher.Form method="post" action="/?index">
-          <input type="hidden" name="intent" value="markApplied" />
+          <input type="hidden" name="intent" value="updateStatus" />
+          <input type="hidden" name="status" value="applied" />
           <input type="hidden" name="jobId" value={jobId ?? ''} />
 
           <div className="space-y-4 py-4">
@@ -60,10 +61,10 @@ export function ApplicationDialog({
               Mark application as sent for: <strong>{jobTitle}</strong>
             </p>
             <div className="space-y-2">
-              <Label htmlFor="applicationSentDate">Application Date</Label>
+              <Label htmlFor="date">Application Date</Label>
               <Input
-                id="applicationSentDate"
-                name="applicationSentDate"
+                id="date"
+                name="date"
                 type="date"
                 defaultValue={today}
                 required

@@ -6,7 +6,7 @@ import {
   SelectItem,
   SelectTrigger,
 } from '~/components/ui/select'
-import type { ApplicationStatus } from '~/db/schema'
+import { applicationStatusEnum, type ApplicationStatus } from '~/db/schema'
 
 type StatusBadgeProps = {
   jobId: string
@@ -28,15 +28,7 @@ const STATUS_CONFIG: Record<
   dumped: { label: 'Dumped', variant: 'secondary', className: 'line-through opacity-60' },
 }
 
-const ALL_STATUSES: ApplicationStatus[] = [
-  'not_applied',
-  'applied',
-  'interviewing',
-  'offer',
-  'rejected',
-  'ghosted',
-  'dumped',
-]
+const ALL_STATUSES = applicationStatusEnum.enumValues
 
 export function StatusBadge({ jobId, status, appliedAt, onAppliedClick }: StatusBadgeProps) {
   const fetcher = useFetcher()

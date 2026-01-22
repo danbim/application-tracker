@@ -7,3 +7,7 @@
 /.react-router/
 /build/
 .claude/settings.local.json
+
+# Playwright
+/playwright-report/
+/test-results/

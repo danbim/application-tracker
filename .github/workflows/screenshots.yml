@@ -8,15 +8,23 @@ on:
       - 'e2e/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   screenshots:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
       - uses: oven-sh/setup-bun@v1
         with:
-          bun-version: latest
+          bun-version: '1'
 
       - name: Install dependencies
         run: bun install

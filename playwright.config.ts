@@ -8,14 +8,14 @@ export default defineConfig({
   workers: 1,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5175',
     trace: 'on-first-retry',
     screenshot: 'off',
   },
   webServer: {
-    command: 'bun run dev',
-    url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    command: 'bun run dev --port 5175',
+    url: 'http://localhost:5175',
+    reuseExistingServer: false,
     env: {
       TEST_PGLITE: 'true',
     },

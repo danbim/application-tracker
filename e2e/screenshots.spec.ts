@@ -1,15 +1,6 @@
 import { test } from '@playwright/test'
-import { setupTestDb, teardownTestDb } from './test-db'
 
 test.describe('Landing page screenshots', () => {
-  test.beforeAll(async () => {
-    await setupTestDb()
-  })
-
-  test.afterAll(async () => {
-    await teardownTestDb()
-  })
-
   test('job list with scores', async ({ page }) => {
     await page.goto('/')
     await page.waitForSelector('table')

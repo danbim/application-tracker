@@ -1,11 +1,15 @@
 {
   "mcpServers": {
-    "postgres": {
+    "dbhub": {
+      "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres"],
-      "env": {
-        "DATABASE_URL": "${DATABASE_URL}"
-      }
+      "args": [
+        "@bytebase/dbhub@latest",
+        "--transport",
+        "stdio",
+        "--dsn",
+        "${DATABASE_URL}"
+      ]
     },
     "github": {
       "command": "npx",

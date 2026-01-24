@@ -10,7 +10,7 @@ describe('JobNoteRepository', () => {
         { id: '3', createdAt: new Date('2026-01-02') },
       ]
       const sorted = [...notes].sort(
-        (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+        (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
       )
       expect(sorted[0].id).toBe('2')
       expect(sorted[1].id).toBe('3')

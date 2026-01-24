@@ -12,12 +12,12 @@ describe('JobOpeningRepository', () => {
         dumped: 'dumpedAt',
       }
 
-      expect(statusToTimestampField['applied']).toBe('appliedAt')
-      expect(statusToTimestampField['interviewing']).toBe('interviewingAt')
-      expect(statusToTimestampField['offer']).toBe('offerAt')
-      expect(statusToTimestampField['rejected']).toBe('rejectedAt')
-      expect(statusToTimestampField['ghosted']).toBe('ghostedAt')
-      expect(statusToTimestampField['dumped']).toBe('dumpedAt')
+      expect(statusToTimestampField.applied).toBe('appliedAt')
+      expect(statusToTimestampField.interviewing).toBe('interviewingAt')
+      expect(statusToTimestampField.offer).toBe('offerAt')
+      expect(statusToTimestampField.rejected).toBe('rejectedAt')
+      expect(statusToTimestampField.ghosted).toBe('ghostedAt')
+      expect(statusToTimestampField.dumped).toBe('dumpedAt')
     })
 
     it('should not set timestamp for not_applied status', () => {
@@ -26,7 +26,7 @@ describe('JobOpeningRepository', () => {
         applied: 'appliedAt',
       }
 
-      expect(statusToTimestampField['not_applied']).toBeNull()
+      expect(statusToTimestampField.not_applied).toBeNull()
     })
   })
 })

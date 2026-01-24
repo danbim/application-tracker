@@ -32,7 +32,7 @@ export class JobNoteRepository {
 
   async update(
     id: string,
-    data: { content: string }
+    data: { content: string },
   ): Promise<JobNote | undefined> {
     const results = await this.db
       .update(jobNotes)

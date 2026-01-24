@@ -1,8 +1,13 @@
+import { useState } from 'react'
 import { Form, redirect, useActionData, useLoaderData } from 'react-router'
 import { JobForm } from '~/components/job-form'
+import { NotesPanel } from '~/components/notes-panel'
 import { Button } from '~/components/ui/button'
 import { jobOpeningSchema } from '~/schemas/job-opening.schema'
-import { jobOpeningRepository } from '~/services/index.server'
+import {
+  jobNoteRepository,
+  jobOpeningRepository,
+} from '~/services/index.server'
 import type { Route } from './+types/jobs.$id.edit'
 
 export function meta({ data }: Route.MetaArgs) {
@@ -21,13 +26,17 @@ export async function loader({ params }: Route.LoaderArgs) {
   if (!id) {
     throw new Response('Bad Request', { status: 400 })
   }
-  const job = await jobOpeningRepository.findById(id)
+
+  const [job, notes] = await Promise.all([
+    jobOpeningRepository.findById(id),
+    jobNoteRepository.findByJobId(id),
+  ])
 
   if (!job) {
     throw new Response('Not Found', { status: 404 })
   }
 
-  return { job }
+  return { job, notes }
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -42,6 +51,25 @@ export async function action({ request, params }: Route.ActionArgs) {
   if (intent === 'delete') {
     await jobOpeningRepository.delete(id)
     return redirect('/')
+  }
+
+  if (intent === 'createNote') {
+    const content = formData.get('content') as string
+    await jobNoteRepository.create({ jobOpeningId: id, content })
+    return { success: true }
+  }
+
+  if (intent === 'updateNote') {
+    const noteId = formData.get('noteId') as string
+    const content = formData.get('content') as string
+    await jobNoteRepository.update(noteId, { content })
+    return { success: true }
+  }
+
+  if (intent === 'deleteNote') {
+    const noteId = formData.get('noteId') as string
+    await jobNoteRepository.delete(noteId)
+    return { success: true }
   }
 
   // Update handling - same validation as new job route
@@ -86,21 +114,40 @@ export async function action({ request, params }: Route.ActionArgs) {
 }
 
 export default function EditJob() {
-  const { job } = useLoaderData<typeof loader>()
+  const { job, notes } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
+  const [notesPanelOpen, setNotesPanelOpen] = useState(false)
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Edit Job Opening</h1>
-        <Form method="post">
-          <input type="hidden" name="intent" value="delete" />
-          <Button type="submit" variant="destructive">
-            Delete
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setNotesPanelOpen(true)}
+          >
+            Notes ({notes.length})
           </Button>
-        </Form>
+          <Form method="post">
+            <input type="hidden" name="intent" value="delete" />
+            <Button type="submit" variant="destructive">
+              Delete
+            </Button>
+          </Form>
+        </div>
       </div>
       <JobForm job={job} errors={actionData?.errors} />
+
+      <NotesPanel
+        jobId={job.id}
+        jobTitle={job.title}
+        jobCompany={job.company}
+        notes={notes}
+        isOpen={notesPanelOpen}
+        onClose={() => setNotesPanelOpen(false)}
+      />
     </div>
   )
 }

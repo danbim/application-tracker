@@ -13,6 +13,7 @@ type NotesPanelProps = {
   notes: JobNote[]
   isOpen: boolean
   onClose: () => void
+  onNoteChange?: () => void
 }
 
 export function NotesPanel({
@@ -22,6 +23,7 @@ export function NotesPanel({
   notes,
   isOpen,
   onClose,
+  onNoteChange,
 }: NotesPanelProps) {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
@@ -29,16 +31,18 @@ export function NotesPanel({
   const formRef = useRef<HTMLFormElement>(null)
   const prevFetcherState = useRef(fetcher.state)
 
-  // Reset form after successful submission
+  // Reset form after successful submission and notify parent
   useEffect(() => {
     if (prevFetcherState.current !== 'idle' && fetcher.state === 'idle') {
       if (formRef.current) {
         formRef.current.reset()
       }
       setEditingNoteId(null)
+      // Notify parent to refresh notes
+      onNoteChange?.()
     }
     prevFetcherState.current = fetcher.state
-  }, [fetcher.state])
+  }, [fetcher.state, onNoteChange])
 
   // Handle Escape key
   useEffect(() => {

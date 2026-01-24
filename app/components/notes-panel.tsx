@@ -72,24 +72,34 @@ export function NotesPanel({
 
   return (
     <>
-      {/* Backdrop */}
-      <button
-        type="button"
+      {/* biome-ignore lint/a11y/noStaticElementInteractions lint/a11y/useKeyWithClickEvents: Backdrop is purely decorative, Escape key handled by document listener */}
+      <div
         data-testid="notes-panel-backdrop"
         className="fixed inset-0 bg-black/20 z-40 cursor-default"
         onClick={onClose}
-        aria-label="Close notes panel"
       />
 
       {/* Panel */}
-      <div className="fixed top-0 right-0 h-full w-[400px] bg-background border-l shadow-xl z-50 flex flex-col">
+      <div
+        role="dialog"
+        aria-labelledby="notes-panel-title"
+        aria-modal="true"
+        className="fixed top-0 right-0 h-full w-[400px] bg-background border-l shadow-xl z-50 flex flex-col"
+      >
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-start">
           <div>
-            <h2 className="font-semibold text-lg">{jobTitle}</h2>
+            <h2 id="notes-panel-title" className="font-semibold text-lg">
+              {jobTitle}
+            </h2>
             <p className="text-sm text-muted-foreground">{jobCompany}</p>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose}>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            aria-label="Close notes panel"
+          >
             ✕
           </Button>
         </div>

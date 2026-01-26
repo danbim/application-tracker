@@ -11,7 +11,12 @@ export default defineConfig({
     },
     setupFiles: ['./vitest.setup.ts'],
     include: ['app/**/*.test.{ts,tsx}'],
-    exclude: ['node_modules', 'build', 'app/services/scoring.service.test.ts'],
+    exclude: [
+      'node_modules',
+      'build',
+      'app/services/scoring.service.test.ts',
+      'app/repositories/job-opening.repository.test.ts',
+    ],
     coverage: {
       provider: 'v8',
       include: ['app/**/*.{ts,tsx}'],

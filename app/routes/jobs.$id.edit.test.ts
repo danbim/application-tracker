@@ -2,18 +2,25 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMockJobOpening } from '~/test-utils'
 import { action, loader } from './jobs.$id.edit'
 
-// Mock the repository
+// Mock the repositories
 vi.mock('~/services/index.server', () => ({
   jobOpeningRepository: {
     findById: vi.fn(),
     update: vi.fn(),
     delete: vi.fn(),
   },
+  jobNoteRepository: {
+    findByJobId: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
 }))
 
-import { jobOpeningRepository } from '~/services/index.server'
+import { jobNoteRepository, jobOpeningRepository } from '~/services/index.server'
 
 const mockJobRepo = vi.mocked(jobOpeningRepository)
+const mockNoteRepo = vi.mocked(jobNoteRepository)
 
 function createFormDataRequest(
   data: Record<string, string | string[]>,
@@ -56,12 +63,14 @@ const validJobData = {
 describe('jobs.$id.edit route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockNoteRepo.findByJobId.mockResolvedValue([])
   })
 
   describe('loader', () => {
-    it('returns job when found', async () => {
+    it('returns job and notes when found', async () => {
       const mockJob = createMockJobOpening({ id: 'job-123', title: 'Test Job' })
       mockJobRepo.findById.mockResolvedValue(mockJob)
+      mockNoteRepo.findByJobId.mockResolvedValue([])
 
       const result = await loader({
         request: new Request('http://localhost/jobs/job-123/edit'),
@@ -70,7 +79,9 @@ describe('jobs.$id.edit route', () => {
       })
 
       expect(mockJobRepo.findById).toHaveBeenCalledWith('job-123')
+      expect(mockNoteRepo.findByJobId).toHaveBeenCalledWith('job-123')
       expect(result.job).toEqual(mockJob)
+      expect(result.notes).toEqual([])
     })
 
     it('throws 404 when job not found', async () => {

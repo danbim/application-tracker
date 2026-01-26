@@ -16,6 +16,7 @@ export default defineConfig({
       'build',
       'app/services/scoring.service.test.ts',
       'app/repositories/job-opening.repository.test.ts',
+      'app/repositories/job-note.repository.test.ts',
     ],
     coverage: {
       provider: 'v8',

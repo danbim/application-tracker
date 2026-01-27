@@ -240,7 +240,7 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
                   id="dateOpened"
                   name="dateOpened"
                   type="date"
-                  defaultValue={job?.dateOpened ?? ''}
+                  defaultValue={job?.dateOpened ?? new Date().toISOString().split('T')[0]}
                 />
               </div>
 

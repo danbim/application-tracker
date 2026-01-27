@@ -40,6 +40,7 @@ A single-user application for ranking and tracking job openings using weighted s
 - Rank and filter jobs by formula score, country, track, and wow status
 - Track application status through 7 stages (not applied, applied, interviewing, offer, rejected, ghosted, dumped)
 - Add notes to any job opening
+- Track job posting sites and saved searches with "last checked" timestamps
 - Paste HTML job descriptions — automatically converted to Markdown
 - Back up and restore the database (`bun run db:backup` / `bun run db:restore`)
 

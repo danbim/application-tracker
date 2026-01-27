@@ -1,5 +1,5 @@
-import { PGlite } from '@electric-sql/pglite'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
+import { PGlite } from '@electric-sql/pglite'
 import { drizzle } from 'drizzle-orm/pglite'
 import { migrate } from 'drizzle-orm/pglite/migrator'
 import * as schema from '~/db/schema'
@@ -59,9 +59,18 @@ describe('JobNoteRepository', () => {
     })
 
     it('should create multiple notes for the same job', async () => {
-      await repository.create({ jobOpeningId: testJobId, content: 'First note' })
-      await repository.create({ jobOpeningId: testJobId, content: 'Second note' })
-      await repository.create({ jobOpeningId: testJobId, content: 'Third note' })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'First note',
+      })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'Second note',
+      })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'Third note',
+      })
 
       const notes = await repository.findByJobId(testJobId)
       expect(notes).toHaveLength(3)
@@ -83,7 +92,9 @@ describe('JobNoteRepository', () => {
     })
 
     it('should return undefined when note does not exist', async () => {
-      const result = await repository.findById('00000000-0000-0000-0000-000000000000')
+      const result = await repository.findById(
+        '00000000-0000-0000-0000-000000000000',
+      )
 
       expect(result).toBeUndefined()
     })
@@ -123,8 +134,14 @@ describe('JobNoteRepository', () => {
     it('should only return notes for the specified job', async () => {
       const job2Id = await createTestJob({ title: 'Another Job' })
 
-      await repository.create({ jobOpeningId: testJobId, content: 'Note for job 1' })
-      await repository.create({ jobOpeningId: job2Id, content: 'Note for job 2' })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'Note for job 1',
+      })
+      await repository.create({
+        jobOpeningId: job2Id,
+        content: 'Note for job 2',
+      })
 
       const resultsJob1 = await repository.findByJobId(testJobId)
       const resultsJob2 = await repository.findByJobId(job2Id)
@@ -164,13 +181,18 @@ describe('JobNoteRepository', () => {
         content: 'New content',
       })
 
-      expect(result?.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+      expect(result?.updatedAt.getTime()).toBeGreaterThan(
+        originalUpdatedAt.getTime(),
+      )
     })
 
     it('should return undefined when note does not exist', async () => {
-      const result = await repository.update('00000000-0000-0000-0000-000000000000', {
-        content: 'New content',
-      })
+      const result = await repository.update(
+        '00000000-0000-0000-0000-000000000000',
+        {
+          content: 'New content',
+        },
+      )
 
       expect(result).toBeUndefined()
     })
@@ -192,7 +214,9 @@ describe('JobNoteRepository', () => {
     })
 
     it('should return false when note does not exist', async () => {
-      const result = await repository.delete('00000000-0000-0000-0000-000000000000')
+      const result = await repository.delete(
+        '00000000-0000-0000-0000-000000000000',
+      )
 
       expect(result).toBe(false)
     })
@@ -203,10 +227,22 @@ describe('JobNoteRepository', () => {
       const job2Id = await createTestJob({ title: 'Job 2' })
       const job3Id = await createTestJob({ title: 'Job 3' })
 
-      await repository.create({ jobOpeningId: testJobId, content: 'Note 1 for job 1' })
-      await repository.create({ jobOpeningId: testJobId, content: 'Note 2 for job 1' })
-      await repository.create({ jobOpeningId: testJobId, content: 'Note 3 for job 1' })
-      await repository.create({ jobOpeningId: job2Id, content: 'Note 1 for job 2' })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'Note 1 for job 1',
+      })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'Note 2 for job 1',
+      })
+      await repository.create({
+        jobOpeningId: testJobId,
+        content: 'Note 3 for job 1',
+      })
+      await repository.create({
+        jobOpeningId: job2Id,
+        content: 'Note 1 for job 2',
+      })
       // job3 has no notes
 
       const counts = await repository.countByJobIds([testJobId, job2Id, job3Id])

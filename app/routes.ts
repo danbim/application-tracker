@@ -4,6 +4,7 @@ export default [
   index('routes/home.tsx'),
   route('jobs/new', 'routes/jobs.new.tsx'),
   route('jobs/:id/edit', 'routes/jobs.$id.edit.tsx'),
+  route('api/jobs/:id/notes', 'routes/api.jobs.$id.notes.ts'),
   route('formulas', 'routes/formulas.tsx'),
   route('formulas/new', 'routes/formulas.new.tsx'),
   route('formulas/:id/edit', 'routes/formulas.$id.edit.tsx'),

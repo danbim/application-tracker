@@ -1,5 +1,5 @@
-import { PGlite } from '@electric-sql/pglite'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'bun:test'
+import { PGlite } from '@electric-sql/pglite'
 import { drizzle } from 'drizzle-orm/pglite'
 import { migrate } from 'drizzle-orm/pglite/migrator'
 import * as schema from '~/db/schema'
@@ -11,7 +11,9 @@ describe('JobOpeningRepository', () => {
   let db: ReturnType<typeof drizzle<typeof schema>>
   let repository: JobOpeningRepository
 
-  const createTestJob = (overrides: Partial<NewJobOpening> = {}): NewJobOpening => ({
+  const createTestJob = (
+    overrides: Partial<NewJobOpening> = {},
+  ): NewJobOpening => ({
     title: 'Test Engineer',
     company: 'Test Corp',
     description: 'A test job opening',
@@ -60,7 +62,9 @@ describe('JobOpeningRepository', () => {
 
   describe('findById', () => {
     it('should return the job when it exists', async () => {
-      const created = await repository.create(createTestJob({ title: 'Find Me' }))
+      const created = await repository.create(
+        createTestJob({ title: 'Find Me' }),
+      )
 
       const result = await repository.findById(created.id)
 
@@ -70,7 +74,9 @@ describe('JobOpeningRepository', () => {
     })
 
     it('should return undefined when job does not exist', async () => {
-      const result = await repository.findById('00000000-0000-0000-0000-000000000000')
+      const result = await repository.findById(
+        '00000000-0000-0000-0000-000000000000',
+      )
 
       expect(result).toBeUndefined()
     })
@@ -121,13 +127,18 @@ describe('JobOpeningRepository', () => {
       await new Promise((resolve) => setTimeout(resolve, 10))
       const result = await repository.update(created.id, { title: 'New Title' })
 
-      expect(result?.updatedAt.getTime()).toBeGreaterThan(originalUpdatedAt.getTime())
+      expect(result?.updatedAt.getTime()).toBeGreaterThan(
+        originalUpdatedAt.getTime(),
+      )
     })
 
     it('should return undefined when job does not exist', async () => {
-      const result = await repository.update('00000000-0000-0000-0000-000000000000', {
-        title: 'New Title',
-      })
+      const result = await repository.update(
+        '00000000-0000-0000-0000-000000000000',
+        {
+          title: 'New Title',
+        },
+      )
 
       expect(result).toBeUndefined()
     })
@@ -146,7 +157,9 @@ describe('JobOpeningRepository', () => {
     })
 
     it('should return false when job does not exist', async () => {
-      const result = await repository.delete('00000000-0000-0000-0000-000000000000')
+      const result = await repository.delete(
+        '00000000-0000-0000-0000-000000000000',
+      )
 
       expect(result).toBe(false)
     })
@@ -208,7 +221,9 @@ describe('JobOpeningRepository', () => {
     })
 
     it('should update status to not_applied without setting any timestamp', async () => {
-      const created = await repository.create(createTestJob({ status: 'applied' }))
+      const created = await repository.create(
+        createTestJob({ status: 'applied' }),
+      )
 
       const result = await repository.updateStatus(created.id, 'not_applied')
 
@@ -219,7 +234,11 @@ describe('JobOpeningRepository', () => {
       const created = await repository.create(createTestJob())
       const customDate = '2026-01-15'
 
-      const result = await repository.updateStatus(created.id, 'applied', customDate)
+      const result = await repository.updateStatus(
+        created.id,
+        'applied',
+        customDate,
+      )
 
       expect(result?.appliedAt).toEqual(new Date(customDate))
     })
@@ -271,12 +290,23 @@ describe('JobOpeningRepository', () => {
 
   describe('findByStatuses', () => {
     it('should return jobs with matching statuses', async () => {
-      await repository.create(createTestJob({ title: 'Job 1', status: 'not_applied' }))
-      await repository.create(createTestJob({ title: 'Job 2', status: 'applied' }))
-      await repository.create(createTestJob({ title: 'Job 3', status: 'interviewing' }))
-      await repository.create(createTestJob({ title: 'Job 4', status: 'rejected' }))
+      await repository.create(
+        createTestJob({ title: 'Job 1', status: 'not_applied' }),
+      )
+      await repository.create(
+        createTestJob({ title: 'Job 2', status: 'applied' }),
+      )
+      await repository.create(
+        createTestJob({ title: 'Job 3', status: 'interviewing' }),
+      )
+      await repository.create(
+        createTestJob({ title: 'Job 4', status: 'rejected' }),
+      )
 
-      const results = await repository.findByStatuses(['applied', 'interviewing'])
+      const results = await repository.findByStatuses([
+        'applied',
+        'interviewing',
+      ])
 
       expect(results).toHaveLength(2)
       expect(results.map((j) => j.title).sort()).toEqual(['Job 2', 'Job 3'])
@@ -291,9 +321,13 @@ describe('JobOpeningRepository', () => {
     })
 
     it('should order results by dateAdded descending', async () => {
-      const job1 = await repository.create(createTestJob({ title: 'First', status: 'applied' }))
+      const job1 = await repository.create(
+        createTestJob({ title: 'First', status: 'applied' }),
+      )
       await new Promise((resolve) => setTimeout(resolve, 10))
-      const job2 = await repository.create(createTestJob({ title: 'Second', status: 'applied' }))
+      const job2 = await repository.create(
+        createTestJob({ title: 'Second', status: 'applied' }),
+      )
 
       const results = await repository.findByStatuses(['applied'])
 

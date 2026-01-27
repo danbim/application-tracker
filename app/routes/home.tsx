@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link, useLoaderData, useSearchParams } from 'react-router'
 import { ApplicationDialog } from '~/components/application-dialog'
 import { JobTable } from '~/components/job-table'
@@ -12,11 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import {
-  ACTIVE_STATUSES,
-  type ApplicationStatus,
-  type JobNote,
-} from '~/db/schema'
+import { ACTIVE_STATUSES, type ApplicationStatus } from '~/db/schema'
 import {
   jobNoteRepository,
   jobOpeningRepository,
@@ -56,14 +52,6 @@ export function meta() {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url)
-
-  // Handle fetching notes for a specific job (when panel opens)
-  const fetchNotes = url.searchParams.get('fetchNotes')
-  const jobIdForNotes = url.searchParams.get('jobId')
-  if (fetchNotes === 'true' && jobIdForNotes) {
-    const notes = await jobNoteRepository.findByJobId(jobIdForNotes)
-    return Response.json({ notes })
-  }
 
   const formulaParam = url.searchParams.get('formula')
   const sortParam = url.searchParams.get('sort') || 'score'
@@ -164,45 +152,24 @@ export async function action({ request }: Route.ActionArgs) {
     return { success: true }
   }
 
-  if (intent === 'createNote') {
-    const jobId = formData.get('jobId') as string
-    const content = formData.get('content') as string
-    await jobNoteRepository.create({ jobOpeningId: jobId, content })
-    return { success: true }
-  }
-
-  if (intent === 'updateNote') {
-    const noteId = formData.get('noteId') as string
-    const content = formData.get('content') as string
-    await jobNoteRepository.update(noteId, { content })
-    return { success: true }
-  }
-
-  if (intent === 'deleteNote') {
-    const noteId = formData.get('noteId') as string
-    await jobNoteRepository.delete(noteId)
-    return { success: true }
-  }
-
   return { success: false }
 }
 
 export default function Home() {
-  const loaderData = useLoaderData<typeof loader>()
-
-  // Guard against partial loader data (when used as an API endpoint for notes)
-  const jobs = loaderData.jobs || []
-  const formulas = loaderData.formulas || []
-  const selectedFormulaId = loaderData.selectedFormulaId || null
-  const sortBy = loaderData.sortBy || 'score'
-  const availableCountries = loaderData.availableCountries || []
-  const selectedCountry = loaderData.selectedCountry || 'all'
-  const hasWowJobs = loaderData.hasWowJobs || false
-  const wowFilter = loaderData.wowFilter || false
-  const selectedTrack = loaderData.selectedTrack || 'all'
-  const selectedStatus = loaderData.selectedStatus || 'active'
-  const statusCounts = loaderData.statusCounts || {}
-  const noteCountsObj = loaderData.noteCounts
+  const {
+    jobs,
+    formulas,
+    selectedFormulaId,
+    sortBy,
+    availableCountries,
+    selectedCountry,
+    hasWowJobs,
+    wowFilter,
+    selectedTrack,
+    selectedStatus,
+    statusCounts,
+    noteCounts: noteCountsObj,
+  } = useLoaderData<typeof loader>()
 
   const noteCounts = new Map(Object.entries(noteCountsObj || {}))
 
@@ -210,7 +177,6 @@ export default function Home() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
   const [notesPanelJobId, setNotesPanelJobId] = useState<string | null>(null)
-  const [notes, setNotes] = useState<JobNote[]>([])
 
   const selectedJob = selectedJobId
     ? jobs.find((j) => j.job.id === selectedJobId)?.job
@@ -219,22 +185,6 @@ export default function Home() {
   const notesPanelJob = notesPanelJobId
     ? jobs.find((j) => j.job.id === notesPanelJobId)?.job
     : null
-
-  // Fetch notes when panel opens or notes change
-  const fetchNotes = useCallback(() => {
-    if (notesPanelJobId) {
-      fetch(`/?jobId=${notesPanelJobId}&fetchNotes=true`, {
-        headers: { Accept: 'application/json' },
-      })
-        .then((res) => res.json())
-        .then((data) => setNotes(data.notes || []))
-        .catch((err) => console.error('Failed to fetch notes:', err))
-    }
-  }, [notesPanelJobId])
-
-  useEffect(() => {
-    fetchNotes()
-  }, [fetchNotes])
 
   const handleAppliedClick = (jobId: string) => {
     setSelectedJobId(jobId)
@@ -247,7 +197,6 @@ export default function Home() {
 
   const closeNotesPanel = () => {
     setNotesPanelJobId(null)
-    setNotes([])
   }
 
   const updateFilter = (key: string, value: string) => {
@@ -416,10 +365,8 @@ export default function Home() {
           jobId={notesPanelJob.id}
           jobTitle={notesPanelJob.title}
           jobCompany={notesPanelJob.company}
-          notes={notes}
           isOpen={!!notesPanelJobId}
           onClose={closeNotesPanel}
-          onNoteChange={fetchNotes}
         />
       )}
     </div>

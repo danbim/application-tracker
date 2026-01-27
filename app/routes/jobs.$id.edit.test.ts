@@ -10,14 +10,14 @@ vi.mock('~/services/index.server', () => ({
     delete: vi.fn(),
   },
   jobNoteRepository: {
-    findByJobId: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
+    countByJobIds: vi.fn(),
   },
 }))
 
-import { jobNoteRepository, jobOpeningRepository } from '~/services/index.server'
+import {
+  jobNoteRepository,
+  jobOpeningRepository,
+} from '~/services/index.server'
 
 const mockJobRepo = vi.mocked(jobOpeningRepository)
 const mockNoteRepo = vi.mocked(jobNoteRepository)
@@ -63,14 +63,14 @@ const validJobData = {
 describe('jobs.$id.edit route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockNoteRepo.findByJobId.mockResolvedValue([])
+    mockNoteRepo.countByJobIds.mockResolvedValue(new Map())
   })
 
   describe('loader', () => {
-    it('returns job and notes when found', async () => {
+    it('returns job and noteCount when found', async () => {
       const mockJob = createMockJobOpening({ id: 'job-123', title: 'Test Job' })
       mockJobRepo.findById.mockResolvedValue(mockJob)
-      mockNoteRepo.findByJobId.mockResolvedValue([])
+      mockNoteRepo.countByJobIds.mockResolvedValue(new Map([['job-123', 3]]))
 
       const result = await loader({
         request: new Request('http://localhost/jobs/job-123/edit'),
@@ -79,9 +79,23 @@ describe('jobs.$id.edit route', () => {
       })
 
       expect(mockJobRepo.findById).toHaveBeenCalledWith('job-123')
-      expect(mockNoteRepo.findByJobId).toHaveBeenCalledWith('job-123')
+      expect(mockNoteRepo.countByJobIds).toHaveBeenCalledWith(['job-123'])
       expect(result.job).toEqual(mockJob)
-      expect(result.notes).toEqual([])
+      expect(result.noteCount).toBe(3)
+    })
+
+    it('returns noteCount 0 when no notes exist', async () => {
+      const mockJob = createMockJobOpening({ id: 'job-123' })
+      mockJobRepo.findById.mockResolvedValue(mockJob)
+      mockNoteRepo.countByJobIds.mockResolvedValue(new Map())
+
+      const result = await loader({
+        request: new Request('http://localhost/jobs/job-123/edit'),
+        params: { id: 'job-123' },
+        context: {},
+      })
+
+      expect(result.noteCount).toBe(0)
     })
 
     it('throws 404 when job not found', async () => {

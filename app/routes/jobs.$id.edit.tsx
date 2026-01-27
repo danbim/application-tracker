@@ -27,16 +27,16 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw new Response('Bad Request', { status: 400 })
   }
 
-  const [job, notes] = await Promise.all([
+  const [job, noteCounts] = await Promise.all([
     jobOpeningRepository.findById(id),
-    jobNoteRepository.findByJobId(id),
+    jobNoteRepository.countByJobIds([id]),
   ])
 
   if (!job) {
     throw new Response('Not Found', { status: 404 })
   }
 
-  return { job, notes }
+  return { job, noteCount: noteCounts.get(id) ?? 0 }
 }
 
 export async function action({ request, params }: Route.ActionArgs) {
@@ -51,25 +51,6 @@ export async function action({ request, params }: Route.ActionArgs) {
   if (intent === 'delete') {
     await jobOpeningRepository.delete(id)
     return redirect('/')
-  }
-
-  if (intent === 'createNote') {
-    const content = formData.get('content') as string
-    await jobNoteRepository.create({ jobOpeningId: id, content })
-    return { success: true }
-  }
-
-  if (intent === 'updateNote') {
-    const noteId = formData.get('noteId') as string
-    const content = formData.get('content') as string
-    await jobNoteRepository.update(noteId, { content })
-    return { success: true }
-  }
-
-  if (intent === 'deleteNote') {
-    const noteId = formData.get('noteId') as string
-    await jobNoteRepository.delete(noteId)
-    return { success: true }
   }
 
   // Update handling - same validation as new job route
@@ -114,7 +95,7 @@ export async function action({ request, params }: Route.ActionArgs) {
 }
 
 export default function EditJob() {
-  const { job, notes } = useLoaderData<typeof loader>()
+  const { job, noteCount } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const [notesPanelOpen, setNotesPanelOpen] = useState(false)
 
@@ -128,7 +109,7 @@ export default function EditJob() {
             variant="outline"
             onClick={() => setNotesPanelOpen(true)}
           >
-            Notes ({notes.length})
+            Notes ({noteCount})
           </Button>
           <Form method="post">
             <input type="hidden" name="intent" value="delete" />
@@ -144,7 +125,6 @@ export default function EditJob() {
         jobId={job.id}
         jobTitle={job.title}
         jobCompany={job.company}
-        notes={notes}
         isOpen={notesPanelOpen}
         onClose={() => setNotesPanelOpen(false)}
       />

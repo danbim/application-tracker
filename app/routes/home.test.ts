@@ -18,11 +18,7 @@ vi.mock('~/services/index.server', () => ({
     ),
   },
   jobNoteRepository: {
-    findByJobId: vi.fn(),
     countByJobIds: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
   },
 }))
 
@@ -68,7 +64,7 @@ describe('home route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockJobRepo.countByStatus.mockResolvedValue(defaultStatusCounts)
-    mockNoteRepo.countByJobIds.mockResolvedValue([])
+    mockNoteRepo.countByJobIds.mockResolvedValue(new Map())
   })
 
   describe('loader', () => {

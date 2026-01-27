@@ -10,39 +10,47 @@ type NotesPanelProps = {
   jobId: string
   jobTitle: string
   jobCompany: string
-  notes: JobNote[]
   isOpen: boolean
   onClose: () => void
-  onNoteChange?: () => void
 }
 
 export function NotesPanel({
   jobId,
   jobTitle,
   jobCompany,
-  notes,
   isOpen,
   onClose,
-  onNoteChange,
 }: NotesPanelProps) {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
   const fetcher = useFetcher()
+  const loadFetcher = useFetcher<{ notes: JobNote[] }>()
   const formRef = useRef<HTMLFormElement>(null)
   const prevFetcherState = useRef(fetcher.state)
 
-  // Reset form after successful submission and notify parent
+  const notes = loadFetcher.data?.notes ?? []
+  const resourceUrl = `/api/jobs/${jobId}/notes`
+
+  // Load notes when panel opens
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadFetcher.load is stable but causes re-render loops if listed
+  useEffect(() => {
+    if (isOpen) {
+      loadFetcher.load(resourceUrl)
+    }
+  }, [isOpen, resourceUrl])
+
+  // Reset form after successful submission and refetch notes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadFetcher.load is stable but causes re-render loops if listed
   useEffect(() => {
     if (prevFetcherState.current !== 'idle' && fetcher.state === 'idle') {
       if (formRef.current) {
         formRef.current.reset()
       }
       setEditingNoteId(null)
-      // Notify parent to refresh notes
-      onNoteChange?.()
+      loadFetcher.load(resourceUrl)
     }
     prevFetcherState.current = fetcher.state
-  }, [fetcher.state, onNoteChange])
+  }, [fetcher.state, resourceUrl])
 
   // Handle Escape key
   useEffect(() => {
@@ -110,7 +118,7 @@ export function NotesPanel({
 
         {/* Add Note Form */}
         <div className="p-4 border-b">
-          <fetcher.Form method="post" ref={formRef}>
+          <fetcher.Form method="post" ref={formRef} action={resourceUrl}>
             <input type="hidden" name="intent" value="createNote" />
             <input type="hidden" name="jobId" value={jobId} />
             <Textarea
@@ -135,7 +143,7 @@ export function NotesPanel({
             notes.map((note) => (
               <div key={note.id} className="border rounded-lg p-3 space-y-2">
                 {editingNoteId === note.id ? (
-                  <fetcher.Form method="post">
+                  <fetcher.Form method="post" action={resourceUrl}>
                     <input type="hidden" name="intent" value="updateNote" />
                     <input type="hidden" name="noteId" value={note.id} />
                     <Textarea
@@ -180,7 +188,7 @@ export function NotesPanel({
                         >
                           Edit
                         </Button>
-                        <fetcher.Form method="post">
+                        <fetcher.Form method="post" action={resourceUrl}>
                           <input
                             type="hidden"
                             name="intent"

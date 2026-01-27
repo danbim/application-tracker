@@ -1,39 +1,70 @@
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen } from '~/test-utils'
 import { NotesPanel } from './notes-panel'
 
 // Mock react-router's useFetcher
-vi.mock('react-router', () => ({
-  useFetcher: () => ({
-    state: 'idle',
-    submit: vi.fn(),
-    Form: ({
-      children,
-      ...props
-    }: { children: ReactNode } & Record<string, unknown>) => (
-      <form {...props}>{children}</form>
-    ),
-  }),
-  MemoryRouter: ({ children }: { children: ReactNode }) => children,
-}))
+const mockLoad = vi.fn()
+vi.mock('react-router', () => {
+  let callCount = 0
+  return {
+    useFetcher: () => {
+      callCount++
+      // Odd calls = mutation fetcher, even calls = load fetcher
+      if (callCount % 2 === 1) {
+        return {
+          state: 'idle',
+          submit: vi.fn(),
+          Form: ({
+            children,
+            ...props
+          }: { children: ReactNode } & Record<string, unknown>) => (
+            <form {...props}>{children}</form>
+          ),
+        }
+      }
+      return {
+        state: 'idle',
+        data: mockLoadData,
+        load: mockLoad,
+        Form: ({
+          children,
+          ...props
+        }: { children: ReactNode } & Record<string, unknown>) => (
+          <form {...props}>{children}</form>
+        ),
+      }
+    },
+    MemoryRouter: ({ children }: { children: ReactNode }) => children,
+  }
+})
+
+let mockLoadData:
+  | {
+      notes: Array<{
+        id: string
+        jobOpeningId: string
+        content: string
+        createdAt: Date
+        updatedAt: Date
+      }>
+    }
+  | undefined
 
 describe('NotesPanel', () => {
   const defaultProps = {
     jobId: '1',
     jobTitle: 'Software Engineer',
     jobCompany: 'Acme Corp',
-    notes: [] as {
-      id: string
-      jobOpeningId: string
-      content: string
-      createdAt: Date
-      updatedAt: Date
-    }[],
     isOpen: true,
     onClose: vi.fn(),
   }
+
+  beforeEach(() => {
+    mockLoadData = undefined
+    mockLoad.mockClear()
+  })
 
   it('should display job title and company in header', () => {
     render(<NotesPanel {...defaultProps} />)
@@ -42,18 +73,20 @@ describe('NotesPanel', () => {
     expect(screen.getByText('Acme Corp')).toBeInTheDocument()
   })
 
-  it('should display notes in the list', () => {
-    const notes = [
-      {
-        id: '1',
-        jobOpeningId: '1',
-        content: 'First note',
-        createdAt: new Date('2026-01-23T14:00:00'),
-        updatedAt: new Date('2026-01-23T14:00:00'),
-      },
-    ]
+  it('should display notes when loaded', () => {
+    mockLoadData = {
+      notes: [
+        {
+          id: '1',
+          jobOpeningId: '1',
+          content: 'First note',
+          createdAt: new Date('2026-01-23T14:00:00'),
+          updatedAt: new Date('2026-01-23T14:00:00'),
+        },
+      ],
+    }
 
-    render(<NotesPanel {...defaultProps} notes={notes} />)
+    render(<NotesPanel {...defaultProps} />)
 
     expect(screen.getByText('First note')).toBeInTheDocument()
   })
@@ -92,17 +125,19 @@ describe('NotesPanel', () => {
 
   it('should enter edit mode when Edit button is clicked', async () => {
     const user = userEvent.setup()
-    const notes = [
-      {
-        id: '1',
-        jobOpeningId: '1',
-        content: 'Note to edit',
-        createdAt: new Date('2026-01-23T14:00:00'),
-        updatedAt: new Date('2026-01-23T14:00:00'),
-      },
-    ]
+    mockLoadData = {
+      notes: [
+        {
+          id: '1',
+          jobOpeningId: '1',
+          content: 'Note to edit',
+          createdAt: new Date('2026-01-23T14:00:00'),
+          updatedAt: new Date('2026-01-23T14:00:00'),
+        },
+      ],
+    }
 
-    render(<NotesPanel {...defaultProps} notes={notes} />)
+    render(<NotesPanel {...defaultProps} />)
 
     const editButton = screen.getByRole('button', { name: 'Edit' })
     await user.click(editButton)
@@ -115,17 +150,19 @@ describe('NotesPanel', () => {
 
   it('should exit edit mode when Cancel button is clicked', async () => {
     const user = userEvent.setup()
-    const notes = [
-      {
-        id: '1',
-        jobOpeningId: '1',
-        content: 'Note to edit',
-        createdAt: new Date('2026-01-23T14:00:00'),
-        updatedAt: new Date('2026-01-23T14:00:00'),
-      },
-    ]
+    mockLoadData = {
+      notes: [
+        {
+          id: '1',
+          jobOpeningId: '1',
+          content: 'Note to edit',
+          createdAt: new Date('2026-01-23T14:00:00'),
+          updatedAt: new Date('2026-01-23T14:00:00'),
+        },
+      ],
+    }
 
-    render(<NotesPanel {...defaultProps} notes={notes} />)
+    render(<NotesPanel {...defaultProps} />)
 
     // Enter edit mode
     const editButton = screen.getByRole('button', { name: 'Edit' })
@@ -159,5 +196,21 @@ describe('NotesPanel', () => {
       name: 'Close notes panel',
     })
     expect(closeButton).toBeInTheDocument()
+  })
+
+  it('should load notes from resource route when opened', () => {
+    render(<NotesPanel {...defaultProps} />)
+
+    expect(mockLoad).toHaveBeenCalledWith('/api/jobs/1/notes')
+  })
+
+  it('should set form action to resource route', () => {
+    render(<NotesPanel {...defaultProps} />)
+
+    const forms = document.querySelectorAll('form')
+    const formsWithAction = Array.from(forms).filter(
+      (f) => f.getAttribute('action') === '/api/jobs/1/notes',
+    )
+    expect(formsWithAction.length).toBeGreaterThan(0)
   })
 })

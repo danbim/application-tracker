@@ -101,25 +101,27 @@ export default function EditJob() {
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Edit Job Opening</h1>
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setNotesPanelOpen(true)}
-          >
-            Notes ({noteCount})
-          </Button>
-          <Form method="post">
-            <input type="hidden" name="intent" value="delete" />
-            <Button type="submit" variant="destructive">
-              Delete
+      <JobForm
+        job={job}
+        errors={actionData?.errors}
+        headerActions={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setNotesPanelOpen(true)}
+            >
+              Notes ({noteCount})
             </Button>
-          </Form>
-        </div>
-      </div>
-      <JobForm job={job} errors={actionData?.errors} />
+            <Form method="post">
+              <input type="hidden" name="intent" value="delete" />
+              <Button type="submit" variant="destructive">
+                Delete
+              </Button>
+            </Form>
+          </>
+        }
+      />
 
       <NotesPanel
         jobId={job.id}

@@ -59,7 +59,6 @@ export default function NewJob() {
 
   return (
     <div className="container mx-auto py-8 max-w-3xl">
-      <h1 className="text-3xl font-bold mb-6">Add Job Opening</h1>
       <JobForm errors={actionData?.errors} />
     </div>
   )

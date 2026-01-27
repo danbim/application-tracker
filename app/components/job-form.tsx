@@ -19,6 +19,7 @@ import type { JobOpening } from '~/db/schema'
 type JobFormProps = {
   job?: JobOpening
   errors?: Record<string, string>
+  headerActions?: React.ReactNode
 }
 
 const CURRENCIES = ['EUR', 'USD', 'GBP', 'CHF']
@@ -59,7 +60,7 @@ const RATING_CRITERIA = [
   { name: 'ratingJobSecurity', label: 'Job Security' },
 ]
 
-export function JobForm({ job, errors }: JobFormProps) {
+export function JobForm({ job, errors, headerActions }: JobFormProps) {
   const [description, setDescription] = useState(job?.description ?? '')
   const [showPreview, setShowPreview] = useState(false)
 
@@ -88,6 +89,27 @@ export function JobForm({ job, errors }: JobFormProps) {
 
   return (
     <Form method="post" className="space-y-6">
+      <div className="sticky top-0 z-10 bg-background border-b py-3 -mx-4 px-4">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold">
+            {job ? 'Edit Job Opening' : 'Add Job Opening'}
+          </h1>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => history.back()}
+            >
+              Cancel
+            </Button>
+            {headerActions}
+            <Button type="submit">
+              {job ? 'Update' : 'Create'} Job Opening
+            </Button>
+          </div>
+        </div>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
@@ -381,12 +403,6 @@ export function JobForm({ job, errors }: JobFormProps) {
         </CardContent>
       </Card>
 
-      <div className="flex gap-4">
-        <Button type="submit">{job ? 'Update' : 'Create'} Job Opening</Button>
-        <Button type="button" variant="outline" onClick={() => history.back()}>
-          Cancel
-        </Button>
-      </div>
     </Form>
   )
 }

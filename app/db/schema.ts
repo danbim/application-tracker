@@ -129,3 +129,15 @@ export type JobOpening = typeof jobOpenings.$inferSelect
 export type NewJobOpening = typeof jobOpenings.$inferInsert
 export type JobNote = typeof jobNotes.$inferSelect
 export type NewJobNote = typeof jobNotes.$inferInsert
+
+export const jobPostingSites = pgTable('job_posting_sites', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull(),
+  url: text('url').notNull(),
+  lastCheckedAt: timestamp('last_checked_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export type JobPostingSite = typeof jobPostingSites.$inferSelect
+export type NewJobPostingSite = typeof jobPostingSites.$inferInsert

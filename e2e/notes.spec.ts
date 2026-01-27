@@ -106,8 +106,13 @@ test.describe('Job Notes', () => {
     // Wait for the note to appear
     await expect(panel.locator('.prose:has-text("Note to delete")')).toBeVisible({ timeout: 10000 })
 
-    // Delete the note
+    // Delete the note - click Delete to open confirmation dialog
     await panel.locator('button:has-text("Delete")').click()
+
+    // Confirm deletion in the dialog
+    const confirmDialog = page.locator('[data-slot="dialog-content"]')
+    await expect(confirmDialog).toBeVisible()
+    await confirmDialog.locator('button:has-text("Delete")').click()
 
     // Note should be gone and empty state should appear
     await expect(panel.locator('.prose:has-text("Note to delete")')).not.toBeVisible()

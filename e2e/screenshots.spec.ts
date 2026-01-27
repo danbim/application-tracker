@@ -50,6 +50,30 @@ test.describe('Landing page screenshots', () => {
     })
   })
 
+  test('notes panel', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForSelector('table')
+
+    // Click on the first job row (Stripe - Staff Software Engineer) to open notes panel
+    await page.locator('td:has-text("Stripe")').click()
+    await page.waitForSelector('[role="dialog"]')
+
+    // Add a couple of notes to make the screenshot useful
+    const panel = page.locator('[role="dialog"]')
+    await panel.locator('textarea[name="content"]').fill('Had a great call with the hiring manager. Team works on distributed systems at massive scale.')
+    await panel.locator('button:has-text("Add Note")').click()
+    await panel.locator('.prose:has-text("Had a great call")').waitFor({ timeout: 10000 })
+
+    await panel.locator('textarea[name="content"]').fill('Tech stack: TypeScript, Go, Kubernetes. Strong engineering culture.')
+    await panel.locator('button:has-text("Add Note")').click()
+    await panel.locator('.prose:has-text("Tech stack")').waitFor({ timeout: 10000 })
+
+    await page.screenshot({
+      path: 'docs/screenshots/notes-panel.png',
+      fullPage: false,
+    })
+  })
+
   test('filters section', async ({ page }) => {
     await page.goto('/')
     await page.waitForSelector('table')

@@ -225,6 +225,9 @@ export default function Home() {
         <h1 className="text-3xl font-bold">Job Openings</h1>
         <div className="flex gap-2">
           <Button asChild variant="outline">
+            <Link to="/sites">Sites</Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/formulas">Manage Formulas</Link>
           </Button>
           <Button asChild>

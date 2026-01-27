@@ -2,6 +2,7 @@
   "name": "job-tracker",
   "private": true,
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "format": "bunx biome format --fix",
     "lint": "bunx biome lint",

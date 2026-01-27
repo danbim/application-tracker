@@ -2,6 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { useFetcher } from 'react-router'
 import { Button } from '~/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '~/components/ui/dialog'
 import { Textarea } from '~/components/ui/textarea'
 import type { JobNote } from '~/db/schema'
 import { formatDualTimestamp } from '~/lib/format-timestamp'
@@ -23,6 +31,7 @@ export function NotesPanel({
 }: NotesPanelProps) {
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null)
   const [editContent, setEditContent] = useState('')
+  const [deletingNoteId, setDeletingNoteId] = useState<string | null>(null)
   const fetcher = useFetcher()
   const loadFetcher = useFetcher<{ notes: JobNote[] }>()
   const formRef = useRef<HTMLFormElement>(null)
@@ -188,22 +197,15 @@ export function NotesPanel({
                         >
                           Edit
                         </Button>
-                        <fetcher.Form method="post" action={resourceUrl}>
-                          <input
-                            type="hidden"
-                            name="intent"
-                            value="deleteNote"
-                          />
-                          <input type="hidden" name="noteId" value={note.id} />
-                          <Button
-                            type="submit"
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive hover:text-destructive"
-                          >
-                            Delete
-                          </Button>
-                        </fetcher.Form>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive"
+                          onClick={() => setDeletingNoteId(note.id)}
+                        >
+                          Delete
+                        </Button>
                       </div>
                     </div>
                   </>
@@ -213,6 +215,45 @@ export function NotesPanel({
           )}
         </div>
       </div>
+
+      <Dialog
+        open={!!deletingNoteId}
+        onOpenChange={(open) => {
+          if (!open) setDeletingNoteId(null)
+        }}
+      >
+        <DialogContent showCloseButton={false}>
+          <DialogHeader>
+            <DialogTitle>Delete note</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this note? This action cannot be
+              undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeletingNoteId(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (deletingNoteId) {
+                  const formData = new FormData()
+                  formData.set('intent', 'deleteNote')
+                  formData.set('noteId', deletingNoteId)
+                  fetcher.submit(formData, {
+                    method: 'post',
+                    action: resourceUrl,
+                  })
+                  setDeletingNoteId(null)
+                }
+              }}
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

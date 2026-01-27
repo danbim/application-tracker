@@ -213,4 +213,58 @@ describe('NotesPanel', () => {
     )
     expect(formsWithAction.length).toBeGreaterThan(0)
   })
+
+  it('should show confirmation dialog when Delete is clicked', async () => {
+    const user = userEvent.setup()
+    mockLoadData = {
+      notes: [
+        {
+          id: '1',
+          jobOpeningId: '1',
+          content: 'Note to delete',
+          createdAt: new Date('2026-01-23T14:00:00'),
+          updatedAt: new Date('2026-01-23T14:00:00'),
+        },
+      ],
+    }
+
+    render(<NotesPanel {...defaultProps} />)
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete' })
+    await user.click(deleteButton)
+
+    expect(screen.getByText('Delete note')).toBeInTheDocument()
+    expect(
+      screen.getByText(/are you sure you want to delete this note/i),
+    ).toBeInTheDocument()
+  })
+
+  it('should close confirmation dialog when Cancel is clicked', async () => {
+    const user = userEvent.setup()
+    mockLoadData = {
+      notes: [
+        {
+          id: '1',
+          jobOpeningId: '1',
+          content: 'Note to delete',
+          createdAt: new Date('2026-01-23T14:00:00'),
+          updatedAt: new Date('2026-01-23T14:00:00'),
+        },
+      ],
+    }
+
+    render(<NotesPanel {...defaultProps} />)
+
+    // Open the dialog
+    const deleteButton = screen.getByRole('button', { name: 'Delete' })
+    await user.click(deleteButton)
+
+    expect(screen.getByText('Delete note')).toBeInTheDocument()
+
+    // Click Cancel in the dialog
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' })
+    await user.click(cancelButton)
+
+    expect(screen.queryByText('Delete note')).not.toBeInTheDocument()
+  })
 })

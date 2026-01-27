@@ -8,4 +8,5 @@ export default [
   route('formulas', 'routes/formulas.tsx'),
   route('formulas/new', 'routes/formulas.new.tsx'),
   route('formulas/:id/edit', 'routes/formulas.$id.edit.tsx'),
+  route('sites', 'routes/sites.tsx'),
 ] satisfies RouteConfig

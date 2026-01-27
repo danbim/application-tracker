@@ -50,6 +50,13 @@
       "when": 1737500000000,
       "tag": "0006_add_application_status",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1769245787715,
+      "tag": "0007_lame_the_enforcers",
+      "breakpoints": true
     }
   ]
 }

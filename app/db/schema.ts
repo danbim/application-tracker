@@ -113,7 +113,19 @@ export const jobOpenings = pgTable('job_openings', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
 
+export const jobNotes = pgTable('job_notes', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  jobOpeningId: uuid('job_opening_id')
+    .notNull()
+    .references(() => jobOpenings.id, { onDelete: 'cascade' }),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
 export type ScoringFormula = typeof scoringFormulas.$inferSelect
 export type NewScoringFormula = typeof scoringFormulas.$inferInsert
 export type JobOpening = typeof jobOpenings.$inferSelect
 export type NewJobOpening = typeof jobOpenings.$inferInsert
+export type JobNote = typeof jobNotes.$inferSelect
+export type NewJobNote = typeof jobNotes.$inferInsert

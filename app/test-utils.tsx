@@ -2,7 +2,7 @@ import type { RenderOptions } from '@testing-library/react'
 import { render } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { MemoryRouter } from 'react-router'
-import type { ApplicationStatus, JobOpening, ScoringFormula } from '~/db/schema'
+import type { JobOpening, ScoringFormula } from '~/db/schema'
 
 // Custom render with providers
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {

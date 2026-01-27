@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLoaderData, useSearchParams } from 'react-router'
 import { ApplicationDialog } from '~/components/application-dialog'
 import { JobTable } from '~/components/job-table'
+import { NotesPanel } from '~/components/notes-panel'
 import { StatusTabs } from '~/components/status-tabs'
 import { Button } from '~/components/ui/button'
 import {
@@ -13,6 +14,7 @@ import {
 } from '~/components/ui/select'
 import { ACTIVE_STATUSES, type ApplicationStatus } from '~/db/schema'
 import {
+  jobNoteRepository,
   jobOpeningRepository,
   scoringFormulaRepository,
   scoringService,
@@ -50,6 +52,7 @@ export function meta() {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url)
+
   const formulaParam = url.searchParams.get('formula')
   const sortParam = url.searchParams.get('sort') || 'score'
   const countryParam = url.searchParams.get('country')
@@ -115,6 +118,10 @@ export async function loader({ request }: Route.LoaderArgs) {
     })
   }
 
+  // Fetch note counts for all jobs
+  const jobIds = allJobs.map((job) => job.id)
+  const noteCounts = await jobNoteRepository.countByJobIds(jobIds)
+
   return {
     jobs: rankedJobs,
     formulas,
@@ -127,6 +134,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     selectedTrack: trackParam || 'all',
     selectedStatus: statusParam,
     statusCounts,
+    noteCounts: Object.fromEntries(noteCounts),
   }
 }
 
@@ -160,19 +168,35 @@ export default function Home() {
     selectedTrack,
     selectedStatus,
     statusCounts,
+    noteCounts: noteCountsObj,
   } = useLoaderData<typeof loader>()
+
+  const noteCounts = new Map(Object.entries(noteCountsObj || {}))
 
   const [searchParams, setSearchParams] = useSearchParams()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [selectedJobId, setSelectedJobId] = useState<string | null>(null)
+  const [notesPanelJobId, setNotesPanelJobId] = useState<string | null>(null)
 
   const selectedJob = selectedJobId
     ? jobs.find((j) => j.job.id === selectedJobId)?.job
     : null
 
+  const notesPanelJob = notesPanelJobId
+    ? jobs.find((j) => j.job.id === notesPanelJobId)?.job
+    : null
+
   const handleAppliedClick = (jobId: string) => {
     setSelectedJobId(jobId)
     setDialogOpen(true)
+  }
+
+  const handleRowClick = (jobId: string) => {
+    setNotesPanelJobId(jobId)
+  }
+
+  const closeNotesPanel = () => {
+    setNotesPanelJobId(null)
   }
 
   const updateFilter = (key: string, value: string) => {
@@ -322,7 +346,12 @@ export default function Home() {
         )}
       </div>
 
-      <JobTable jobs={jobs} onAppliedClick={handleAppliedClick} />
+      <JobTable
+        jobs={jobs}
+        noteCounts={noteCounts}
+        onAppliedClick={handleAppliedClick}
+        onRowClick={handleRowClick}
+      />
 
       <ApplicationDialog
         jobId={selectedJobId}
@@ -330,6 +359,16 @@ export default function Home() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
+
+      {notesPanelJob && (
+        <NotesPanel
+          jobId={notesPanelJob.id}
+          jobTitle={notesPanelJob.title}
+          jobCompany={notesPanelJob.company}
+          isOpen={!!notesPanelJobId}
+          onClose={closeNotesPanel}
+        />
+      )}
     </div>
   )
 }

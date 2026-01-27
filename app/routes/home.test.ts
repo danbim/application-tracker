@@ -17,10 +17,14 @@ vi.mock('~/services/index.server', () => ({
       jobs.map((job: unknown) => ({ job, score: 10 })),
     ),
   },
+  jobNoteRepository: {
+    countByJobIds: vi.fn(),
+  },
 }))
 
 // Import the mocked modules
 import {
+  jobNoteRepository,
   jobOpeningRepository,
   scoringFormulaRepository,
   scoringService,
@@ -29,6 +33,7 @@ import {
 const mockJobRepo = vi.mocked(jobOpeningRepository)
 const mockFormulaRepo = vi.mocked(scoringFormulaRepository)
 const mockScoringService = vi.mocked(scoringService)
+const mockNoteRepo = vi.mocked(jobNoteRepository)
 
 function createRequest(url: string): Request {
   return new Request(url)
@@ -59,6 +64,7 @@ describe('home route', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockJobRepo.countByStatus.mockResolvedValue(defaultStatusCounts)
+    mockNoteRepo.countByJobIds.mockResolvedValue(new Map())
   })
 
   describe('loader', () => {

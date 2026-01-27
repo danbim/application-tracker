@@ -21,7 +21,7 @@ A single-user application for ranking and tracking job openings using weighted s
 
 3. Run migrations:
    ```bash
-   bunx drizzle-kit migrate
+   bun run db:migrate
    ```
 
 4. Start the development server:
@@ -33,10 +33,15 @@ A single-user application for ranking and tracking job openings using weighted s
 
 ## Features
 
-- Add and manage job openings with detailed information
+- Add and manage job openings with compensation, work location, and detailed descriptions
+- Rate jobs across 13 criteria (impact, compensation, culture, growth, etc.)
+- Mark standout opportunities with a "wow factor" flag
 - Create custom scoring formulas with weighted criteria
-- Rank jobs based on selected formula
-- Track application status
+- Rank and filter jobs by formula score, country, track, and wow status
+- Track application status through 7 stages (not applied, applied, interviewing, offer, rejected, ghosted, dumped)
+- Add notes to any job opening
+- Paste HTML job descriptions — automatically converted to Markdown
+- Back up and restore the database (`bun run db:backup` / `bun run db:restore`)
 
 ## Tech Stack
 
@@ -44,3 +49,7 @@ A single-user application for ranking and tracking job openings using weighted s
 - React Router v7
 - PostgreSQL + Drizzle ORM
 - shadcn/ui + Tailwind CSS
+
+## Landing Page
+
+See the project landing page at [danbim.github.io/application-tracker](https://danbim.github.io/application-tracker/).

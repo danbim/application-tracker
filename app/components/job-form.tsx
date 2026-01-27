@@ -244,23 +244,6 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
                 />
               </div>
 
-              <div className="flex items-center space-x-2 pt-2">
-                <input type="hidden" name="wow" value="false" />
-                <input
-                  type="checkbox"
-                  id="wow"
-                  name="wow"
-                  value="true"
-                  defaultChecked={job?.wow ?? false}
-                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-                />
-                <Label
-                  htmlFor="wow"
-                  className="text-base font-medium cursor-pointer"
-                >
-                  Wow Factor — This job stands out!
-                </Label>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -396,6 +379,23 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
         <TabsContent value="ratings" forceMount className="data-[state=inactive]:hidden">
           <Card>
             <CardContent className="pt-6 space-y-4">
+              <div className="flex items-center space-x-2">
+                <input type="hidden" name="wow" value="false" />
+                <input
+                  type="checkbox"
+                  id="wow"
+                  name="wow"
+                  value="true"
+                  defaultChecked={job?.wow ?? false}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                />
+                <Label
+                  htmlFor="wow"
+                  className="text-base font-medium cursor-pointer"
+                >
+                  Wow Factor — This job stands out!
+                </Label>
+              </div>
               {RATING_CRITERIA.map(({ name, label }) => (
                 <RatingInput
                   key={name}

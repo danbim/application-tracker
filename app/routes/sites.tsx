@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import type { JobPostingSite } from '~/db/schema'
+import { formatDualTimestamp } from '~/lib/format-timestamp'
 import { jobPostingSiteSchema } from '~/schemas/job-posting-site.schema'
 import { jobPostingSiteService } from '~/services/index.server'
 import type { Route } from './+types/sites'
@@ -81,31 +82,6 @@ export async function action({ request }: Route.ActionArgs) {
   }
 
   return { success: false }
-}
-
-function formatRelative(diffDays: number): string {
-  if (diffDays <= 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) {
-    const weeks = Math.floor(diffDays / 7)
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`
-  }
-  const months = Math.floor(diffDays / 30)
-  return `${months} ${months === 1 ? 'month' : 'months'} ago`
-}
-
-function formatLastChecked(date: string | null): string {
-  if (!date) return 'Never'
-  const checked = new Date(date)
-  const diffMs = Date.now() - checked.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  const relative = formatRelative(diffDays)
-  const localized = checked.toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  })
-  return `${relative} (${localized})`
 }
 
 export default function Sites() {
@@ -175,7 +151,9 @@ export default function Sites() {
                   </a>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatLastChecked(site.lastCheckedAt as string | null)}
+                  {site.lastCheckedAt
+                    ? formatDualTimestamp(site.lastCheckedAt)
+                    : 'Never'}
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">

@@ -7,6 +7,7 @@ import {
   SelectTrigger,
 } from '~/components/ui/select'
 import { type ApplicationStatus, applicationStatusEnum } from '~/db/schema'
+import { formatDate } from '~/lib/format-timestamp'
 
 type StatusBadgeProps = {
   jobId: string
@@ -63,11 +64,6 @@ export function StatusBadge({
   const fetcher = useFetcher()
   const config = STATUS_CONFIG[status]
 
-  const formatDate = (date: Date | null | undefined) => {
-    if (!date) return ''
-    return ` ${date.toLocaleDateString()}`
-  }
-
   const handleStatusChange = (newStatus: string) => {
     if (newStatus === 'applied' && onAppliedClick) {
       onAppliedClick()
@@ -85,7 +81,7 @@ export function StatusBadge({
       <SelectTrigger className="w-auto border-0 p-0 h-auto focus:ring-0 shadow-none">
         <Badge variant={config.variant} className={config.className}>
           {config.label}
-          {status === 'applied' && formatDate(appliedAt)}
+          {status === 'applied' && appliedAt && ` ${formatDate(appliedAt)}`}
         </Badge>
       </SelectTrigger>
       <SelectContent position="popper" align="start">

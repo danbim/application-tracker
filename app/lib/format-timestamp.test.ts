@@ -1,28 +1,27 @@
 import { describe, expect, it, vi } from 'vitest'
-import { formatDualTimestamp } from './format-timestamp'
+import { formatDate, formatDualTimestamp } from './format-timestamp'
 
 describe('formatDualTimestamp', () => {
   it('should format timestamp with relative and absolute parts', () => {
-    // Mock current time to 2026-01-23 16:03:00
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2026-01-23T14:03:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('2 hours ago (23.01.2026 - 14:03)')
+    expect(result).toBe('about 2 hours ago (Jan 23, 2026, 2:03 PM)')
 
     vi.useRealTimers()
   })
 
-  it('should handle "just now" for recent timestamps', () => {
+  it('should handle recent timestamps', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2026-01-23T16:02:30')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('just now (23.01.2026 - 16:02)')
+    expect(result).toBe('1 minute ago (Jan 23, 2026, 4:02 PM)')
 
     vi.useRealTimers()
   })
@@ -34,7 +33,7 @@ describe('formatDualTimestamp', () => {
     const timestamp = new Date('2026-01-20T14:03:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('3 days ago (20.01.2026 - 14:03)')
+    expect(result).toBe('3 days ago (Jan 20, 2026, 2:03 PM)')
 
     vi.useRealTimers()
   })
@@ -46,7 +45,7 @@ describe('formatDualTimestamp', () => {
     const timestamp = new Date('2026-01-23T15:58:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('5 minutes ago (23.01.2026 - 15:58)')
+    expect(result).toBe('5 minutes ago (Jan 23, 2026, 3:58 PM)')
 
     vi.useRealTimers()
   })
@@ -58,55 +57,55 @@ describe('formatDualTimestamp', () => {
     const timestamp = new Date('2025-11-23T14:03:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('2 months ago (23.11.2025 - 14:03)')
+    expect(result).toBe('2 months ago (Nov 23, 2025, 2:03 PM)')
 
     vi.useRealTimers()
   })
 
-  it('should handle singular forms - 1 minute ago', () => {
+  it('should handle 1 minute ago', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2026-01-23T16:02:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('1 minute ago (23.01.2026 - 16:02)')
+    expect(result).toBe('1 minute ago (Jan 23, 2026, 4:02 PM)')
 
     vi.useRealTimers()
   })
 
-  it('should handle singular forms - 1 hour ago', () => {
+  it('should handle about 1 hour ago', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2026-01-23T15:03:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('1 hour ago (23.01.2026 - 15:03)')
+    expect(result).toBe('about 1 hour ago (Jan 23, 2026, 3:03 PM)')
 
     vi.useRealTimers()
   })
 
-  it('should handle singular forms - 1 day ago', () => {
+  it('should handle 1 day ago', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2026-01-22T16:03:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('1 day ago (22.01.2026 - 16:03)')
+    expect(result).toBe('1 day ago (Jan 22, 2026, 4:03 PM)')
 
     vi.useRealTimers()
   })
 
-  it('should handle singular forms - 1 month ago', () => {
+  it('should handle about 1 month ago', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2025-12-23T16:03:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('1 month ago (23.12.2025 - 16:03)')
+    expect(result).toBe('about 1 month ago (Dec 23, 2025, 4:03 PM)')
 
     vi.useRealTimers()
   })
@@ -117,7 +116,7 @@ describe('formatDualTimestamp', () => {
 
     const result = formatDualTimestamp('2026-01-23T14:03:00')
 
-    expect(result).toBe('2 hours ago (23.01.2026 - 14:03)')
+    expect(result).toBe('about 2 hours ago (Jan 23, 2026, 2:03 PM)')
 
     vi.useRealTimers()
   })
@@ -128,15 +127,31 @@ describe('formatDualTimestamp', () => {
     )
   })
 
-  it('should handle future dates as "just now"', () => {
+  it('should handle future dates with "in X" prefix', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-01-23T16:03:00'))
 
     const timestamp = new Date('2026-01-23T16:08:00')
     const result = formatDualTimestamp(timestamp)
 
-    expect(result).toBe('just now (23.01.2026 - 16:08)')
+    expect(result).toBe('in 5 minutes (Jan 23, 2026, 4:08 PM)')
 
     vi.useRealTimers()
+  })
+})
+
+describe('formatDate', () => {
+  it('should format a Date object', () => {
+    const result = formatDate(new Date('2026-01-23'))
+    expect(result).toBe('Jan 23, 2026')
+  })
+
+  it('should format a date string', () => {
+    const result = formatDate('2026-01-23')
+    expect(result).toBe('Jan 23, 2026')
+  })
+
+  it('should return dash for null', () => {
+    expect(formatDate(null)).toBe('-')
   })
 })

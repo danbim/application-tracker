@@ -110,8 +110,10 @@ test.describe('Job Posting Sites', () => {
     // Click "Just Checked"
     await row.locator('button:has-text("Just Checked")').click()
 
-    // Should now show "Today" instead of "Never"
-    await expect(row.locator('text=Today')).toBeVisible({ timeout: 10000 })
+    // Should now show a relative timestamp instead of "Never"
+    await expect(row.locator('text=less than a minute ago')).toBeVisible({
+      timeout: 10000,
+    })
     await expect(row.locator('text=Never')).not.toBeVisible()
   })
 

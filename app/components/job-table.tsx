@@ -16,6 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
+import { formatDate } from '~/lib/format-timestamp'
 import type { RankedJobOpening } from '~/services/scoring.service'
 
 type JobTableProps = {
@@ -31,12 +32,6 @@ export function JobTable({
   onAppliedClick,
   onRowClick,
 }: JobTableProps) {
-  const formatDate = (date: Date | string | null) => {
-    if (!date) return '-'
-    const d = typeof date === 'string' ? new Date(date) : date
-    return d.toLocaleDateString()
-  }
-
   return (
     <Table>
       <TableHeader>

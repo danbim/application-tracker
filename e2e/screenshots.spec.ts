@@ -85,6 +85,17 @@ test.describe('Landing page screenshots', () => {
     })
   })
 
+  test('talent pools', async ({ page }) => {
+    await page.goto('/talent-pools')
+    await page.waitForSelector('table')
+    await page.waitForTimeout(300)
+
+    await page.screenshot({
+      path: 'docs/screenshots/talent-pools.png',
+      fullPage: false,
+    })
+  })
+
   test('filters section', async ({ page }) => {
     await page.goto('/')
     await page.waitForSelector('table')

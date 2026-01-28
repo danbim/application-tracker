@@ -41,6 +41,7 @@ A single-user application for ranking and tracking job openings using weighted s
 - Track application status through 7 stages (not applied, applied, interviewing, offer, rejected, ghosted, dumped)
 - Add notes to any job opening
 - Track job posting sites and saved searches with "last checked" timestamps
+- Track talent pools you've joined or submitted your profile to
 - Paste HTML job descriptions — automatically converted to Markdown
 - Back up and restore the database (`bun run db:backup` / `bun run db:restore`)
 

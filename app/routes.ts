@@ -9,4 +9,5 @@ export default [
   route('formulas/new', 'routes/formulas.new.tsx'),
   route('formulas/:id/edit', 'routes/formulas.$id.edit.tsx'),
   route('sites', 'routes/sites.tsx'),
+  route('talent-pools', 'routes/talent-pools.tsx'),
 ] satisfies RouteConfig

@@ -228,6 +228,9 @@ export default function Home() {
             <Link to="/sites">Sites</Link>
           </Button>
           <Button asChild variant="outline">
+            <Link to="/talent-pools">Talent Pools</Link>
+          </Button>
+          <Button asChild variant="outline">
             <Link to="/formulas">Manage Formulas</Link>
           </Button>
           <Button asChild>

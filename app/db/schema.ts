@@ -147,8 +147,7 @@ export const talentPoolStatusEnum = pgEnum('talent_pool_status', [
   'submitted',
 ])
 
-export type TalentPoolStatus =
-  (typeof talentPoolStatusEnum.enumValues)[number]
+export type TalentPoolStatus = (typeof talentPoolStatusEnum.enumValues)[number]
 
 export const talentPools = pgTable('talent_pools', {
   id: uuid('id').primaryKey().defaultRandom(),

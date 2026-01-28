@@ -1,11 +1,7 @@
 import { eq, sql } from 'drizzle-orm'
 import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import type * as schema from '~/db/schema'
-import {
-  type NewTalentPool,
-  type TalentPool,
-  talentPools,
-} from '~/db/schema'
+import { type NewTalentPool, type TalentPool, talentPools } from '~/db/schema'
 
 export class TalentPoolRepository {
   constructor(private db: PostgresJsDatabase<typeof schema>) {}
@@ -29,10 +25,7 @@ export class TalentPoolRepository {
   }
 
   async create(data: NewTalentPool): Promise<TalentPool> {
-    const results = await this.db
-      .insert(talentPools)
-      .values(data)
-      .returning()
+    const results = await this.db.insert(talentPools).values(data).returning()
     return results[0]
   }
 

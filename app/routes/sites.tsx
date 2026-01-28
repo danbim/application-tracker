@@ -83,13 +83,7 @@ export async function action({ request }: Route.ActionArgs) {
   return { success: false }
 }
 
-function formatLastChecked(date: string | null): string {
-  if (!date) return 'Never'
-  const now = new Date()
-  const checked = new Date(date)
-  const diffMs = now.getTime() - checked.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
+function formatRelative(diffDays: number): string {
   if (diffDays <= 0) return 'Today'
   if (diffDays === 1) return 'Yesterday'
   if (diffDays < 7) return `${diffDays} days ago`
@@ -99,6 +93,19 @@ function formatLastChecked(date: string | null): string {
   }
   const months = Math.floor(diffDays / 30)
   return `${months} ${months === 1 ? 'month' : 'months'} ago`
+}
+
+function formatLastChecked(date: string | null): string {
+  if (!date) return 'Never'
+  const checked = new Date(date)
+  const diffMs = Date.now() - checked.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const relative = formatRelative(diffDays)
+  const localized = checked.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+  return `${relative} (${localized})`
 }
 
 export default function Sites() {

@@ -1,4 +1,8 @@
-import type { NewJobOpening, NewScoringFormula } from '../app/db/schema'
+import type {
+  NewJobOpening,
+  NewJobPostingSite,
+  NewScoringFormula,
+} from '../app/db/schema'
 
 /**
  * Test scoring formulas with different weight profiles
@@ -418,5 +422,36 @@ export const testJobs: NewJobOpening[] = [
     ratingCompanySize: 1,
     ratingStress: 0,
     ratingJobSecurity: 0,
+  },
+]
+
+/**
+ * Test job posting sites with varied lastCheckedAt dates
+ */
+export const testSites: NewJobPostingSite[] = [
+  {
+    name: 'LinkedIn - React Berlin',
+    url: 'https://www.linkedin.com/jobs/search/?keywords=react&location=Berlin',
+    lastCheckedAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+  },
+  {
+    name: 'Indeed - Engineering Manager',
+    url: 'https://de.indeed.com/jobs?q=engineering+manager',
+    lastCheckedAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+  },
+  {
+    name: 'Hacker News - Who is Hiring',
+    url: 'https://news.ycombinator.com/item?id=whoishiring',
+    lastCheckedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), // 6 days ago
+  },
+  {
+    name: 'WeWorkRemotely',
+    url: 'https://weworkremotely.com/categories/remote-full-stack-programming-jobs',
+    lastCheckedAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000), // 2 weeks ago
+  },
+  {
+    name: 'Berlin Startup Jobs',
+    url: 'https://berlinstartupjobs.com/engineering/',
+    lastCheckedAt: null,
   },
 ]

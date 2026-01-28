@@ -111,7 +111,10 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
         </div>
       </div>
 
-      <Tabs defaultValue="basic-info" className="mt-6 flex flex-col flex-1 min-h-0">
+      <Tabs
+        defaultValue="basic-info"
+        className="mt-6 flex flex-col flex-1 min-h-0"
+      >
         <TabsList className="w-full">
           <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
           <TabsTrigger value="compensation">Compensation</TabsTrigger>
@@ -119,7 +122,11 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
           <TabsTrigger value="ratings">Ratings</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="basic-info" forceMount className="data-[state=inactive]:hidden flex-1 min-h-0">
+        <TabsContent
+          value="basic-info"
+          forceMount
+          className="data-[state=inactive]:hidden flex-1 min-h-0"
+        >
           <Card className="h-full">
             <CardContent className="pt-6 space-y-4 h-full flex flex-col">
               <div className="grid grid-cols-1 gap-4">
@@ -240,15 +247,20 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
                   id="dateOpened"
                   name="dateOpened"
                   type="date"
-                  defaultValue={job?.dateOpened ?? new Date().toISOString().split('T')[0]}
+                  defaultValue={
+                    job?.dateOpened ?? new Date().toISOString().split('T')[0]
+                  }
                 />
               </div>
-
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="compensation" forceMount className="data-[state=inactive]:hidden">
+        <TabsContent
+          value="compensation"
+          forceMount
+          className="data-[state=inactive]:hidden"
+        >
           <Card>
             <CardContent className="pt-6 space-y-4">
               <div className="grid grid-cols-4 gap-4">
@@ -333,12 +345,19 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
           </Card>
         </TabsContent>
 
-        <TabsContent value="work-location" forceMount className="data-[state=inactive]:hidden">
+        <TabsContent
+          value="work-location"
+          forceMount
+          className="data-[state=inactive]:hidden"
+        >
           <Card>
             <CardContent className="pt-6 space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="workLocation">Work Type</Label>
-                <Select name="workLocation" defaultValue={job?.workLocation ?? ''}>
+                <Select
+                  name="workLocation"
+                  defaultValue={job?.workLocation ?? ''}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select work type" />
                   </SelectTrigger>
@@ -376,7 +395,11 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
           </Card>
         </TabsContent>
 
-        <TabsContent value="ratings" forceMount className="data-[state=inactive]:hidden">
+        <TabsContent
+          value="ratings"
+          forceMount
+          className="data-[state=inactive]:hidden"
+        >
           <Card>
             <CardContent className="pt-6 space-y-4">
               <div className="flex items-center space-x-2">
@@ -401,14 +424,15 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
                   key={name}
                   name={name}
                   label={label}
-                  defaultValue={job?.[name as keyof JobOpening] as number | null}
+                  defaultValue={
+                    job?.[name as keyof JobOpening] as number | null
+                  }
                 />
               ))}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-
     </Form>
   )
 }

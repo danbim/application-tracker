@@ -16,9 +16,12 @@ export const db = await (async () => {
     await migrate(db, { migrationsFolder: './app/db/migrations' })
 
     // Load and insert test data
-    const { testFormulas, testJobs } = await import('../../e2e/fixtures')
+    const { testFormulas, testJobs, testSites } = await import(
+      '../../e2e/fixtures'
+    )
     await db.insert(schema.scoringFormulas).values(testFormulas)
     await db.insert(schema.jobOpenings).values(testJobs)
+    await db.insert(schema.jobPostingSites).values(testSites)
 
     console.log('[PGLite] Initialized with test data')
     return db

@@ -1,7 +1,4 @@
-import type {
-  JobPostingSite,
-  NewJobPostingSite,
-} from '~/db/schema'
+import type { JobPostingSite, NewJobPostingSite } from '~/db/schema'
 import type { JobPostingSiteRepository } from '~/repositories/job-posting-site.repository'
 
 export class JobPostingSiteService {

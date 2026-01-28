@@ -3,8 +3,8 @@ import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js'
 import type * as schema from '~/db/schema'
 import {
   type JobPostingSite,
-  type NewJobPostingSite,
   jobPostingSites,
+  type NewJobPostingSite,
 } from '~/db/schema'
 
 export class JobPostingSiteRepository {
@@ -14,9 +14,7 @@ export class JobPostingSiteRepository {
     return this.db
       .select()
       .from(jobPostingSites)
-      .orderBy(
-        sql`${jobPostingSites.lastCheckedAt} ASC NULLS FIRST`,
-      )
+      .orderBy(sql`${jobPostingSites.lastCheckedAt} ASC NULLS FIRST`)
   }
 
   async findById(id: string): Promise<JobPostingSite | undefined> {

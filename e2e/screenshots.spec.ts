@@ -74,6 +74,17 @@ test.describe('Landing page screenshots', () => {
     })
   })
 
+  test('job posting sites', async ({ page }) => {
+    await page.goto('/sites')
+    await page.waitForSelector('table')
+    await page.waitForTimeout(300)
+
+    await page.screenshot({
+      path: 'docs/screenshots/sites.png',
+      fullPage: false,
+    })
+  })
+
   test('filters section', async ({ page }) => {
     await page.goto('/')
     await page.waitForSelector('table')

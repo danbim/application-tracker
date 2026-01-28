@@ -2,6 +2,7 @@ import type {
   NewJobOpening,
   NewJobPostingSite,
   NewScoringFormula,
+  NewTalentPool,
 } from '../app/db/schema'
 
 /**
@@ -453,5 +454,35 @@ export const testSites: NewJobPostingSite[] = [
     name: 'Berlin Startup Jobs',
     url: 'https://berlinstartupjobs.com/engineering/',
     lastCheckedAt: null,
+  },
+]
+
+/**
+ * Test talent pools with varied statuses
+ */
+export const testPools: NewTalentPool[] = [
+  {
+    companyName: 'Stripe',
+    url: 'https://stripe.com/jobs/talent',
+    status: 'submitted',
+    notes: 'Applied through referral from a friend.',
+  },
+  {
+    companyName: 'Datadog',
+    url: 'https://careers.datadoghq.com/talent-pool',
+    status: 'submitted',
+    notes: null,
+  },
+  {
+    companyName: 'Vercel',
+    url: 'https://vercel.com/careers/talent',
+    status: 'not_submitted',
+    notes: 'Saw this on Twitter, looks interesting.',
+  },
+  {
+    companyName: 'Cloudflare',
+    url: 'https://www.cloudflare.com/careers/talent-pool',
+    status: 'not_submitted',
+    notes: null,
   },
 ]

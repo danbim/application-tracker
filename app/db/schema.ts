@@ -141,3 +141,24 @@ export const jobPostingSites = pgTable('job_posting_sites', {
 
 export type JobPostingSite = typeof jobPostingSites.$inferSelect
 export type NewJobPostingSite = typeof jobPostingSites.$inferInsert
+
+export const talentPoolStatusEnum = pgEnum('talent_pool_status', [
+  'not_submitted',
+  'submitted',
+])
+
+export type TalentPoolStatus =
+  (typeof talentPoolStatusEnum.enumValues)[number]
+
+export const talentPools = pgTable('talent_pools', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  companyName: text('company_name').notNull(),
+  url: text('url').notNull(),
+  status: talentPoolStatusEnum('status').default('not_submitted').notNull(),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+export type TalentPool = typeof talentPools.$inferSelect
+export type NewTalentPool = typeof talentPools.$inferInsert

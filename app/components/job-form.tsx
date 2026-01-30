@@ -1,9 +1,19 @@
 import { useCallback, useState } from 'react'
 import Markdown from 'react-markdown'
-import { Form } from 'react-router'
+import { Form, useBeforeUnload, useBlocker, useNavigation } from 'react-router'
 import { RatingInput } from '~/components/rating-input'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '~/components/ui/alert-dialog'
 import { Button } from '~/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import { Card, CardContent } from '~/components/ui/card'
 import { Input } from '~/components/ui/input'
 import { Label } from '~/components/ui/label'
 import {
@@ -64,6 +74,26 @@ const RATING_CRITERIA = [
 export function JobForm({ job, errors, headerActions }: JobFormProps) {
   const [description, setDescription] = useState(job?.description ?? '')
   const [showPreview, setShowPreview] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
+  const navigation = useNavigation()
+
+  const blocker = useBlocker(
+    useCallback(
+      () => isDirty && navigation.state === 'idle',
+      [isDirty, navigation.state],
+    ),
+  )
+
+  useBeforeUnload(
+    useCallback(
+      (e: BeforeUnloadEvent) => {
+        if (isDirty) {
+          e.preventDefault()
+        }
+      },
+      [isDirty],
+    ),
+  )
 
   const handlePaste = useCallback(
     async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -89,7 +119,12 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
   )
 
   return (
-    <Form method="post" className="flex flex-col h-[calc(100vh-4rem)]">
+    <Form
+      method="post"
+      className="flex flex-col h-[calc(100vh-4rem)]"
+      onChange={() => setIsDirty(true)}
+      onSubmit={() => setIsDirty(false)}
+    >
       <div className="sticky top-0 z-10 bg-background border-b py-3 -mx-4 px-4">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">
@@ -433,6 +468,25 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <AlertDialog open={blocker.state === 'blocked'}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to leave?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => blocker.reset?.()}>
+              Stay
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => blocker.proceed?.()}>
+              Leave
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Form>
   )
 }

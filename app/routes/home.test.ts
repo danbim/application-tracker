@@ -254,7 +254,7 @@ describe('home route', () => {
       expect(result.sortBy).toBe('date')
     })
 
-    it('filters to active statuses by default', async () => {
+    it('filters to not_applied status by default', async () => {
       const mockJobs = [
         createMockJobOpening({ id: '1', status: 'not_applied' }),
         createMockJobOpening({ id: '2', status: 'applied' }),
@@ -273,9 +273,9 @@ describe('home route', () => {
         context: {},
       })
 
-      // Should only include active statuses (not_applied, applied, interviewing, offer)
-      expect(result.jobs).toHaveLength(4)
-      expect(result.selectedStatus).toBe('active')
+      // Should only include not_applied status by default
+      expect(result.jobs).toHaveLength(1)
+      expect(result.selectedStatus).toBe('not_applied')
     })
 
     it('filters to specific status when status param provided', async () => {

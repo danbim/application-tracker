@@ -84,7 +84,7 @@ describe('StatusBadge', () => {
     )
     const trigger = screen.getByTestId('select-trigger')
     expect(trigger).toHaveTextContent(/Applied/)
-    expect(trigger).toHaveTextContent(/1\/15\/2026/)
+    expect(trigger).toHaveTextContent(/Jan 15, 2026/)
   })
 
   it('renders interviewing status', () => {

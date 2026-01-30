@@ -44,7 +44,7 @@ export function StatusTabs({ selectedStatus, counts }: StatusTabsProps) {
 
   const handleTabChange = (value: string) => {
     const newParams = new URLSearchParams(searchParams)
-    if (value === 'active') {
+    if (value === 'not_applied') {
       newParams.delete('status')
     } else {
       newParams.set('status', value)

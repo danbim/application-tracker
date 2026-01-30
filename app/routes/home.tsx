@@ -58,7 +58,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const countryParam = url.searchParams.get('country')
   const wowParam = url.searchParams.get('wow')
   const trackParam = url.searchParams.get('track')
-  const statusParam = url.searchParams.get('status') || 'active'
+  const statusParam = url.searchParams.get('status') || 'not_applied'
 
   const [allJobs, formulas, statusCounts] = await Promise.all([
     jobOpeningRepository.findAll(),

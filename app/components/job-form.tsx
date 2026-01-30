@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { Form, useBeforeUnload, useBlocker, useNavigation } from 'react-router'
 import { RatingInput } from '~/components/rating-input'
@@ -75,12 +75,13 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
   const [description, setDescription] = useState(job?.description ?? '')
   const [showPreview, setShowPreview] = useState(false)
   const [isDirty, setIsDirty] = useState(false)
+  const isDirtyRef = useRef(false)
   const navigation = useNavigation()
 
   const blocker = useBlocker(
     useCallback(
-      () => isDirty && navigation.state === 'idle',
-      [isDirty, navigation.state],
+      () => isDirtyRef.current && navigation.state === 'idle',
+      [navigation.state],
     ),
   )
 
@@ -122,8 +123,14 @@ export function JobForm({ job, errors, headerActions }: JobFormProps) {
     <Form
       method="post"
       className="flex flex-col h-[calc(100vh-4rem)]"
-      onChange={() => setIsDirty(true)}
-      onSubmit={() => setIsDirty(false)}
+      onChange={() => {
+        isDirtyRef.current = true
+        setIsDirty(true)
+      }}
+      onSubmit={() => {
+        isDirtyRef.current = false
+        setIsDirty(false)
+      }}
     >
       <div className="sticky top-0 z-10 bg-background border-b py-3 -mx-4 px-4">
         <div className="flex items-center justify-between">

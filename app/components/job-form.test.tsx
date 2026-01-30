@@ -1,9 +1,16 @@
 import userEvent from '@testing-library/user-event'
-import { describe, expect, it, vi } from 'vitest'
-import { createMockJobOpening, render, screen } from '~/test-utils'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createMockJobOpening, fireEvent, render, screen } from '~/test-utils'
 import { JobForm } from './job-form'
 
-// Mock react-router Form
+let blockerCallback: (() => boolean) | undefined
+const mockBlocker = {
+  state: 'unblocked' as 'unblocked' | 'blocked' | 'proceeding',
+  reset: vi.fn(),
+  proceed: vi.fn(),
+}
+
+// Mock react-router Form + navigation hooks
 vi.mock('react-router', async () => {
   const actual = await vi.importActual('react-router')
   return {
@@ -14,6 +21,14 @@ vi.mock('react-router', async () => {
     }: { children: React.ReactNode } & Record<string, unknown>) => (
       <form {...props}>{children}</form>
     ),
+    useNavigation: () => ({ state: 'idle' }),
+    useBeforeUnload: () => {},
+    useBlocker: (cb: (() => boolean) | boolean) => {
+      if (typeof cb === 'function') {
+        blockerCallback = cb
+      }
+      return mockBlocker
+    },
   }
 })
 
@@ -25,6 +40,13 @@ vi.mock('react-markdown', () => ({
 }))
 
 describe('JobForm', () => {
+  beforeEach(() => {
+    mockBlocker.state = 'unblocked'
+    mockBlocker.reset.mockClear()
+    mockBlocker.proceed.mockClear()
+    blockerCallback = undefined
+  })
+
   describe('basic information section', () => {
     it('renders title input', () => {
       render(<JobForm />)
@@ -277,6 +299,76 @@ describe('JobForm', () => {
         'input[type="hidden"][name="wow"][value="false"]',
       )
       expect(hiddenWow).toBeInTheDocument()
+    })
+  })
+
+  describe('unsaved changes confirmation', () => {
+    it('does not show dialog when form is clean', () => {
+      render(<JobForm />)
+      expect(screen.queryByText('Unsaved Changes')).not.toBeInTheDocument()
+    })
+
+    it('shows dialog when blocker state is blocked', () => {
+      mockBlocker.state = 'blocked'
+      render(<JobForm />)
+      expect(screen.getByText('Unsaved Changes')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'You have unsaved changes. Are you sure you want to leave?',
+        ),
+      ).toBeInTheDocument()
+    })
+
+    it('calls blocker.reset when Stay button is clicked', async () => {
+      mockBlocker.state = 'blocked'
+      const user = userEvent.setup()
+      render(<JobForm />)
+
+      const stayButton = screen.getByRole('button', { name: /Stay/ })
+      await user.click(stayButton)
+      expect(mockBlocker.reset).toHaveBeenCalled()
+    })
+
+    it('calls blocker.proceed when Leave button is clicked', async () => {
+      mockBlocker.state = 'blocked'
+      const user = userEvent.setup()
+      render(<JobForm />)
+
+      const leaveButton = screen.getByRole('button', { name: /Leave/ })
+      await user.click(leaveButton)
+      expect(mockBlocker.proceed).toHaveBeenCalled()
+    })
+
+    it('form is not dirty before any changes', () => {
+      render(<JobForm />)
+      expect(blockerCallback).toBeDefined()
+      expect(blockerCallback?.()).toBe(false)
+    })
+
+    it('form becomes dirty on input change', async () => {
+      const user = userEvent.setup()
+      render(<JobForm />)
+
+      await user.type(screen.getByLabelText(/Company/), 'Acme')
+      expect(blockerCallback?.()).toBe(true)
+    })
+
+    it('does not block navigation when form is submitted', async () => {
+      const user = userEvent.setup()
+      const { container } = render(<JobForm />)
+
+      // Make the form dirty
+      await user.type(screen.getByLabelText(/Company/), 'Acme')
+      expect(blockerCallback?.()).toBe(true)
+
+      // Capture the callback reference before submit triggers a re-render.
+      // With a ref-based implementation the same callback reads the updated
+      // ref value; with a state-based closure it would still see isDirty=true.
+      const callbackBeforeSubmit = blockerCallback!
+
+      fireEvent.submit(container.querySelector('form')!)
+
+      expect(callbackBeforeSubmit()).toBe(false)
     })
   })
 })

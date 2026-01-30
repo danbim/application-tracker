@@ -364,9 +364,10 @@ describe('JobForm', () => {
       // Capture the callback reference before submit triggers a re-render.
       // With a ref-based implementation the same callback reads the updated
       // ref value; with a state-based closure it would still see isDirty=true.
-      const callbackBeforeSubmit = blockerCallback!
+      const callbackBeforeSubmit = blockerCallback as () => boolean
 
-      fireEvent.submit(container.querySelector('form')!)
+      const form = container.querySelector('form') as HTMLFormElement
+      fireEvent.submit(form)
 
       expect(callbackBeforeSubmit()).toBe(false)
     })

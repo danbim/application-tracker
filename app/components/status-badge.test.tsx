@@ -51,6 +51,7 @@ vi.mock('~/components/ui/select', () => ({
     value: string
   }) => (
     <button
+      type="button"
       data-testid={`select-item-${value}`}
       onClick={() => capturedOnValueChange?.(value)}
     >
